@@ -1,29 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-
-class Restaurant {
-  final String name;
-
-  Restaurant({required this.name});
-
-  factory Restaurant.fromMap(Map<String, dynamic> map) {
-    return Restaurant(name: map['name']);
-  }
-}
-
-class DatabaseHelper {
-  static Future<Database> initDb() async {
-    String path = join(await getDatabasesPath(), 'assets/database.db');
-    return openDatabase(path, version: 1);
-  }
-
-  static Future<List<Restaurant>> getRestaurants() async {
-    final db = await initDb();
-    final List<Map<String, dynamic>> maps = await db.query('RESTAURANT', columns: ['name']);
-    return maps.map((map) => Restaurant.fromMap(map)).toList();
-  }
-}
+import '../components/database_helper.dart';
+import '../components/restaurant.dart';
 
 class CartePage extends StatefulWidget {
   @override
