@@ -10,7 +10,7 @@ class DatabaseHelper {
 
   static Future<List<Restaurant>> getRestaurants() async {
     final db = await initDb();
-    final List<Map<String, dynamic>> maps = await db.query('RESTAURANT', columns: ['name']);
+    final List<Map<String, dynamic>> maps = await db.query('RESTAURANT');
     return maps.map((map) => Restaurant.fromMap(map)).toList();
   }
 }

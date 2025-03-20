@@ -26,7 +26,7 @@ class _CartePageState extends State<CartePage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erreur de chargement :' + snapshot.error.toString()));
+            return Center(child: Text('Erreur de chargement : ' + snapshot.error.toString()));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('Aucun restaurant trouvé'));
           }
@@ -34,6 +34,7 @@ class _CartePageState extends State<CartePage> {
             children: snapshot.data!.map((restaurant) {
               return ListTile(
                 title: Text(restaurant.name),
+                subtitle: Text(restaurant.operator),
                 leading: Icon(Icons.restaurant),
               );
             }).toList(),
