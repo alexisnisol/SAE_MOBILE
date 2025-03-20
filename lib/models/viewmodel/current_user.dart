@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../User.dart';
+import '../user.dart';
 
 class CurrentUser extends ChangeNotifier {
 
