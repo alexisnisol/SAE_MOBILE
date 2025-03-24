@@ -5,9 +5,7 @@ import 'components/database_helper.dart';
 import 'package:sae_mobile/components/router.dart';
 
 Future<void> main() async {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
-  await DatabaseHelper.initialize();
+
   runApp(const MyApp());
 }
 
