@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+
+
 class HomeScreen extends StatelessWidget {
   final Widget child;
   const HomeScreen({super.key, required this.child});
+
 
   int _getIndexFromRoute(BuildContext context) {
     final currentLocation = GoRouter.of(context).state.uri.path;
@@ -21,6 +24,7 @@ class HomeScreen extends StatelessWidget {
       default:
         return 0;
     }
+
   }
 
   @override
