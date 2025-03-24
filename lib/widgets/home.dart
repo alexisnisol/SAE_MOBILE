@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'homeBody.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,7 +13,7 @@ class _HomeState extends State<Home> {
   final TextEditingController _searchController = TextEditingController();
 
   static final List<Widget> pages = <Widget>[
-    Center(child: Text('Home')),
+    const HomeBody(), // Remplacez par HomeBody
     Center(child: Text('Favoris')),
     Center(child: Text('Carte')),
     Center(child: Text('Avis')),
