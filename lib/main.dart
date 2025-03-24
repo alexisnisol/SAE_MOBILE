@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sae_mobile/widgets/home.dart';
+import 'package:sae_mobile/components/router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,12 +10,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Taste&Tell',
-      home : const Home(),
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
-
-
     );
   }
 }
