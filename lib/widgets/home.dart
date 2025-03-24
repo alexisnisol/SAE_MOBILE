@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'carte_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static final List<Widget> pages = <Widget>[
     Center(child: Text('Home')),
     Center(child: Text('Favoris')),
-    Center(child: Text('Carte')),
+    CartePage(),
     Center(child: Text('Avis')),
     Center(child: Text('Profil')),
   ];
