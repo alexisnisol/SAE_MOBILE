@@ -1,22 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sae_mobile/components/review.dart';
 
-// Modèle d'un avis
-class Review {
-  final String id;
-  final String restaurantId;
-  final String restaurantName;
-  final String userName;
-  final String comment;
-
-  Review({
-    required this.id,
-    required this.restaurantId,
-    required this.restaurantName,
-    required this.userName,
-    required this.comment,
-  });
-}
 
 class AvisPage extends StatefulWidget {
   const AvisPage({super.key});
