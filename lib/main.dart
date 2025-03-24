@@ -6,11 +6,13 @@ import 'components/database_helper.dart';
 import 'package:sae_mobile/components/router.dart';
 
 Future<void> main() async {
+
   if (!kIsWeb) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
   await DatabaseHelper.initialize();
+
   runApp(const MyApp());
 }
 
