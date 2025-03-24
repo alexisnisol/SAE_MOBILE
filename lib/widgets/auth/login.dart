@@ -2,23 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sae_mobile/components/auth/auth_welcome.dart';
-import 'package:sae_mobile/components/auth/register_form.dart';
-import '../../components/auth/circle_logo.dart';
+import 'package:sae_mobile/components/auth/circle_logo.dart';
+import 'package:sae_mobile/components/auth/login_form.dart';
+import '../../components/auth/auth_welcome.dart';
 import '../../components/auth/switch_auth_button.dart';
 import '../../components/form/input_text_style.dart';
 
-class RegisterScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
 
-  const RegisterScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AuthWelcomeText(isRegister: true),
+                AuthWelcomeText(isRegister: false),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Card(
@@ -36,11 +34,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     elevation: 5,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: RegisterForm()
+                      child: LoginForm()
                     ),
                   ),
                 ),
-                AuthButton(isRegister: true),
+                AuthButton(isRegister: false),
               ],
             ),
           )
