@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sae_mobile/widgets/home.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'components/database_helper.dart';
+import 'package:sae_mobile/components/router.dart';
 
 Future<void> main() async {
   sqfliteFfiInit();
@@ -15,12 +16,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Taste&Tell',
-      home : const Home(),
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
-
-
     );
   }
 }
