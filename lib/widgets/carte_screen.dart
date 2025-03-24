@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/database_helper.dart';
 import '../components/restaurant.dart';
+import '../components/sqlite_database.dart';
 import 'restaurant_detail_screen.dart';
 
 class CartePage extends StatefulWidget {
@@ -14,7 +15,6 @@ class _CartePageState extends State<CartePage> {
   @override
   void initState() {
     super.initState();
-    DatabaseHelper.loadJsonData();
     futureRestaurants = DatabaseHelper.getRestaurants();
   }
 
@@ -56,7 +56,7 @@ class _CartePageState extends State<CartePage> {
                         FutureBuilder<String>(
                           future: DatabaseHelper.imageLink(restaurant.name),
                           builder: (context, imageSnapshot) {
-                            final imageUrl = imageSnapshot.data ?? DatabaseHelper.DEFAULT_IMAGE;
+                            final imageUrl = imageSnapshot.data ?? SQLiteDatabase.DEFAULT_IMAGE;
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
@@ -96,3 +96,4 @@ class _CartePageState extends State<CartePage> {
     );
   }
 }
+

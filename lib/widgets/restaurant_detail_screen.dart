@@ -3,6 +3,8 @@ import '../components/restaurant.dart';
 import '../components/database_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../components/sqlite_database.dart';
+
 class RestaurantDetailPage extends StatelessWidget {
   final Restaurant restaurant;
 
@@ -30,7 +32,7 @@ class RestaurantDetailPage extends StatelessWidget {
             FutureBuilder<String>(
               future: DatabaseHelper.imageLink(restaurant.name),
               builder: (context, snapshot) {
-                final imageUrl = snapshot.data ?? DatabaseHelper.DEFAULT_IMAGE;
+                final imageUrl = snapshot.data ?? SQLiteDatabase.DEFAULT_IMAGE;
                 return Container(
                   width: double.infinity,
                   height: 200,
