@@ -1,15 +1,10 @@
-import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart';
-import 'package:sae_mobile/components/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
 import 'restaurant.dart';
 import 'i_database.dart';
 
 class SQLiteDatabase implements IDatabase {
   static late Database _database;
-  static late List<dynamic> _jsonData;
-  static bool _isJsonLoaded = false;
 
   @override
   Future<void> initialize() async {
