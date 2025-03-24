@@ -56,7 +56,7 @@ class _CartePageState extends State<CartePage> {
                         FutureBuilder<String>(
                           future: DatabaseHelper.imageLink(restaurant.name),
                           builder: (context, imageSnapshot) {
-                            final imageUrl = imageSnapshot.data ?? SQLiteDatabase.DEFAULT_IMAGE;
+                            final imageUrl = imageSnapshot.data ?? DatabaseHelper.DEFAULT_IMAGE;
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(

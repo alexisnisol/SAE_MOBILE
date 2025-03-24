@@ -1,3 +1,4 @@
+import 'package:sae_mobile/components/database_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'i_database.dart';
 import 'restaurant.dart';
@@ -27,17 +28,6 @@ class SupabaseDatabase implements IDatabase {
     }).toList();
 
     return restaurants;
-  }
-
-  @override
-  Future<String> imageLink(String restauName) async {
-    final response = await _supabase
-        .from('RESTAURANT_IMAGES')
-        .select('image_url')
-        .eq('name', restauName)
-        .single();
-
-    return response != null ? response['image_url'] : SQLiteDatabase.DEFAULT_IMAGE;
   }
 
   @override

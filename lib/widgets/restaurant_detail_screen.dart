@@ -32,7 +32,7 @@ class RestaurantDetailPage extends StatelessWidget {
             FutureBuilder<String>(
               future: DatabaseHelper.imageLink(restaurant.name),
               builder: (context, snapshot) {
-                final imageUrl = snapshot.data ?? SQLiteDatabase.DEFAULT_IMAGE;
+                final imageUrl = snapshot.data ?? DatabaseHelper.DEFAULT_IMAGE;
                 return Container(
                   width: double.infinity,
                   height: 200,
