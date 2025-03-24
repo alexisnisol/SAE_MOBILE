@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/widgets/home.dart';
+import 'package:sae_mobile/widgets/carte_screen.dart';
+
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
@@ -20,7 +22,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/carte',
-          builder: (context, state) => const Center(child: Text('Carte')),
+          builder: (context, state) =>  Center(child: CarteScreen()),
         ),
         GoRoute(
           path: '/avis',

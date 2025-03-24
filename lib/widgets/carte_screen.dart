@@ -4,12 +4,12 @@ import '../components/restaurant.dart';
 import '../components/sqlite_database.dart';
 import 'restaurant_detail_screen.dart';
 
-class CartePage extends StatefulWidget {
+class CarteScreen extends StatefulWidget {
   @override
   _CartePageState createState() => _CartePageState();
 }
 
-class _CartePageState extends State<CartePage> {
+class _CartePageState extends State<CarteScreen> {
   late Future<List<Restaurant>> futureRestaurants;
 
   @override
