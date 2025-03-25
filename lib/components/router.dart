@@ -45,5 +45,6 @@ final GoRouter router = GoRouter(
           builder: (context, state) => LoginScreen()
         ),
       ],
-    ),
+    )
+  ]
 );

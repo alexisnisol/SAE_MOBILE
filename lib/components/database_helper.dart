@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:sae_mobile/models/user.dart';
 
 import 'i_database.dart';
 import 'restaurant.dart';
@@ -30,6 +31,12 @@ class DatabaseHelper {
   }
 
   static Future<List<Restaurant>> getRestaurants() => _database.getRestaurants();
+
+  static Future<List<UserModel>> getUsers() => _database.getUsers();
+
+  static Future<bool> userExists(String email) async {
+    return _database.userExists(email);
+  }
 
   static Future<String> imageLink(String restauName) async {
     if (!_isJsonLoaded) {

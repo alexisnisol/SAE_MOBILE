@@ -1,7 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:provider/provider.dart';
 
+import '../../models/user.dart';
+import '../../models/viewmodel/authentication_service.dart';
 import '../form/input_text_style.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -50,6 +54,13 @@ class _RegisterFormState extends State<RegisterForm> {
                 final data = _formKey.currentState?.value;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("Données : " + data.toString())),
+                );
+
+                context.read<AuthenticationService>().register(
+                  UserModel.createUser(
+                      _formKey.currentState!.fields['name']!.value,
+                    _formKey.currentState!.fields['email']!.value
+                  )
                 );
               }
             },

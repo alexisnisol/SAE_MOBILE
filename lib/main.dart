@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //MULTI PROVIDER
     return MaterialApp.router(
       title: 'Taste&Tell',
       routerConfig: router,

@@ -2,6 +2,7 @@ import 'package:sae_mobile/components/database_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'i_database.dart';
 import 'restaurant.dart';
+import '../models/user.dart';
 import 'sqlite_database.dart';
 
 class SupabaseDatabase implements IDatabase {
@@ -31,7 +32,23 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
+  Future<List<UserModel>> getUsers() async {
+    final List<dynamic> response = await _supabase.from('USER').select();
+    List<UserModel> users = response.map((data) {
+      return UserModel.fromMap(data as Map<String, dynamic>);
+    }).toList();
+    return users;
+  }
+
+  @override
+  Future<bool> userExists(String email) async {
+    final response = await _supabase.from('USER').select().eq('email', email).execute();
+    return response.data != null;
+  }
+
+  @override
   bool isConnected() {
     return _isInitialized;
   }
+
 }
