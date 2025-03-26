@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/components/review.dart';
-
+import '../components/database_helper.dart';
 
 class AvisPage extends StatefulWidget {
   const AvisPage({super.key});
@@ -11,36 +11,34 @@ class AvisPage extends StatefulWidget {
 }
 
 class _AvisPageState extends State<AvisPage> {
-  // Liste d'avis simulée (pour tous les utilisateurs pour l'instant)
-  List<Review> reviews = [
-    Review(
-      id: '1',
-      restaurantId: 'r1',
-      restaurantName: 'Le Gourmet',
-      userName: 'Alice',
-      comment: 'Super ambiance et plats délicieux !',
-    ),
-    Review(
-      id: '2',
-      restaurantId: 'r2',
-      restaurantName: 'Chez Bob',
-      userName: 'Bob',
-      comment: 'Bon rapport qualité/prix, service sympa.',
-    ),
-    Review(
-      id: '3',
-      restaurantId: 'r3',
-      restaurantName: 'La Table de Charlie',
-      userName: 'Charlie',
-      comment: 'Le dessert était exceptionnel !',
-    ),
-  ];
+  late Future<List<Review>> futureReviews;
 
-  // Méthode pour supprimer un avis
-  void _deleteReview(String id) {
+  @override
+  void initState() {
+    super.initState();
+    futureReviews = DatabaseHelper.getReviews(1);
+  }
+
+  void _deleteReview(int id) {
     setState(() {
-      reviews.removeWhere((review) => review.id == id);
+      futureReviews = futureReviews.then((reviews) {
+        reviews.removeWhere((review) => review.id == id);
+        DatabaseHelper.deleteReview(id);
+        return reviews;
+      });
     });
+  }
+
+  Widget _buildStarRating(int rating) {
+    return Row(
+      children: List.generate(5, (index) {
+        return Icon(
+          index < rating ? Icons.star : Icons.star_border,
+          color: Colors.amber,
+          size: 20,
+        );
+      }),
+    );
   }
 
   @override
@@ -57,44 +55,112 @@ class _AvisPageState extends State<AvisPage> {
           ),
         ),
         backgroundColor: const Color(0xff587C60),
-        centerTitle : true,
-
+        centerTitle: true,
       ),
-      body: reviews.isEmpty
-          ? const Center(child: Text("Aucun avis pour le moment."))
-          : ListView.builder(
-        itemCount: reviews.length,
-        itemBuilder: (context, index) {
-          final review = reviews[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ListTile(
-              contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              title: Text(
-                review.comment,
-                style: const TextStyle(fontSize: 16),
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Restaurant: ${review.restaurantName}",
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () => _deleteReview(review.id),
-              ),
-              onTap: () {
-                // Navigue vers la page du restaurant correspondant.
-                context.go('/restaurant/${review.restaurantId}');
+      body: FutureBuilder<List<Review>>(
+        future: futureReviews,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Erreur : ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Aucun avis pour le moment."));
+          } else {
+            final reviews = snapshot.data!;
+            return ListView.builder(
+              itemCount: reviews.length,
+              itemBuilder: (context, index) {
+                final review = reviews[index];
+
+                return FutureBuilder<dynamic>(
+                  future: DatabaseHelper.getRestaurantById(review.restaurantId),
+                  builder: (context, restaurantSnapshot) {
+                    if (restaurantSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (restaurantSnapshot.hasError || restaurantSnapshot.data == null) {
+                      return const ListTile(
+                        title: Text("Nom du restaurant indisponible"),
+                      );
+                    }
+
+                    final restaurant = restaurantSnapshot.data;
+                    String restaurantName = restaurant.name ?? "Nom inconnu";
+
+                    return FutureBuilder<String>(
+                      future: DatabaseHelper.imageLink(restaurantName),
+                      builder: (context, imageSnapshot) {
+                        String? imageUrl = imageSnapshot.data;
+                        bool imageLoaded = imageSnapshot.connectionState == ConnectionState.done && imageUrl != null;
+
+                        return Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            leading: imageLoaded
+                                ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                imageUrl!,
+                                width: 65,
+                                height: 75,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    'assets/images/default_restaurant.png', // Image par défaut
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
+                            )
+                                : const SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
+                            title: Text(
+                              review.avis,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Restaurant: $restaurantName",
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  _buildStarRating(review.etoiles),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Date : ${review.date.day}/${review.date.month}/${review.date.year}",
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deleteReview(review.id),
+                            ),
+                            onTap: () {
+                              context.go('/restaurant/${review.restaurantId}');
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
               },
-            ),
-          );
+            );
+          }
         },
       ),
     );
