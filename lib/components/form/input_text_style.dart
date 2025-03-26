@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
@@ -9,15 +10,17 @@ class StyledTextField extends StatelessWidget {
   final bool isRequired;
   final bool isVisible;
   final IconData? icon;
+  final String formatter;
 
   const StyledTextField({
-    Key? key,
+    super.key,
     required this.name,
     this.hintText,
     this.isRequired = false,
     this.isVisible = true,
     this.icon,
-  }) : super(key: key);
+    this.formatter = "",
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +37,12 @@ class StyledTextField extends StatelessWidget {
         validator: isRequired
             ? FormBuilderValidators.compose([FormBuilderValidators.required()])
             : null,
+        inputFormatters: <TextInputFormatter>[
+          if (formatter == "number")
+            FilteringTextInputFormatter.digitsOnly,
+          if (formatter == "decimal")
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+        ]
       ),
     );
   }

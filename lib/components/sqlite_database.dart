@@ -21,13 +21,13 @@ class SQLiteDatabase implements IDatabase {
 
   @override
   Future<List<UserModel>> getUsers() async {
-    final List<Map<String, dynamic>> maps = await _database.query('USER');
+    final List<Map<String, dynamic>> maps = await _database.query('UTILISATEUR');
     return maps.map((map) => UserModel.fromMap(map)).toList();
   }
 
   @override
   Future<bool> userExists(String email) async {
-    final List<Map<String, dynamic>> maps = await _database.query('USER', where: 'email = ?', whereArgs: [email]);
+    final List<Map<String, dynamic>> maps = await _database.query('UTILISATEUR', where: 'email = ?', whereArgs: [email]);
     return maps.isNotEmpty;
   }
 

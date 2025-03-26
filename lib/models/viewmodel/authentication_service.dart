@@ -12,9 +12,8 @@ class AuthenticationService extends ChangeNotifier {
   Future<void> register(UserModel user) async {
     final userExists = await DatabaseHelper.userExists(user.email);
     if (userExists) {
-      throw Exception('User already exists');
+      throw Exception('User already exists: '+ userExists.toString() + ' ' + user.email);
     } else {
-      // Code to save the user in the database
       _user = user;
       notifyListeners();
     }
@@ -24,4 +23,6 @@ class AuthenticationService extends ChangeNotifier {
     _user = user;
     notifyListeners();
   }
+
+
 }

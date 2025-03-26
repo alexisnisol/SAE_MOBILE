@@ -45,23 +45,57 @@ class _RegisterFormState extends State<RegisterForm> {
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.saveAndValidate()) {
-                if (_formKey.currentState!.value['password'] != _formKey.currentState!.value['confirm_password']) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Les mots de passe ne correspondent pas")),
-                  );
-                  return;
+                final name = _formKey.currentState!.value['name'];
+                final email = _formKey.currentState!.value['email'];
+                final password = _formKey.currentState!.value['password'];
+                final confirmPassword = _formKey.currentState!.value['confirm_password'];
+
+                if (false) {
+                  if (!checkName(context, name)){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Le nom doit contenir uniquement des lettres")),
+                    );
+                    return;
+                  }
+
+                  if (!checkEmail(context, email)){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("L'email n'est pas valide")),
+                    );
+                    return;
+                  }
+
+                  if (!checkPasswordMatch(context, password, confirmPassword)){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Les mots de passe ne correspondent pas")),
+                    );
+                    return;
+                  }
+
+                  if (!checkPassword(context, password)){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre")),
+                    );
+                    return;
+                  }
                 }
+
                 final data = _formKey.currentState?.value;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Données : " + data.toString())),
+                  SnackBar(content: Text("Données : $data")),
                 );
-
-                context.read<AuthenticationService>().register(
-                  UserModel.createUser(
-                      _formKey.currentState!.fields['name']!.value,
-                    _formKey.currentState!.fields['email']!.value
-                  )
-                );
+                try {
+                  context.read<AuthenticationService>().register(
+                      UserModel.createUser(
+                          _formKey.currentState!.fields['name']!.value,
+                          _formKey.currentState!.fields['email']!.value
+                      )
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Erreur: $e")),
+                  );
+                }
               }
             },
             style: ElevatedButton.styleFrom(
@@ -74,5 +108,24 @@ class _RegisterFormState extends State<RegisterForm> {
         ],
       ),
     );
+  }
+
+  static checkPasswordMatch(BuildContext context, String password, String confirmPassword) {
+    return password == confirmPassword;
+  }
+
+  static checkEmail(BuildContext context, String email) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  static checkPassword(BuildContext context, String password) {
+    final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+    return passwordRegex.hasMatch(password);
+  }
+
+  static checkName(BuildContext context, String name) {
+    final nameRegex = RegExp(r'^[a-zA-Z ]+$');
+    return nameRegex.hasMatch(name);
   }
 }

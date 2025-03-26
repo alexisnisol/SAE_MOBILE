@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sae_mobile/models/viewmodel/authentication_service.dart';
 import 'package:sae_mobile/widgets/home.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'components/database_helper.dart';
@@ -21,11 +23,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //MULTI PROVIDER
-    return MaterialApp.router(
+    return MultiProvider(providers: [
+
+        ChangeNotifierProvider(create:
+        (context) => AuthenticationService()
+    ),
+    ],
+    child: MaterialApp.router(
       title: 'Taste&Tell',
       routerConfig: router,
       debugShowCheckedModeBanner: false,
+    )
     );
   }
 }
