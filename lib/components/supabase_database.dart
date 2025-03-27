@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'i_database.dart';
 import 'restaurant.dart';
 import 'sqlite_database.dart';
+import 'review.dart';
 
 class SupabaseDatabase implements IDatabase {
   static bool _isInitialized = false;
@@ -28,6 +29,26 @@ class SupabaseDatabase implements IDatabase {
     }).toList();
 
     return restaurants;
+  }
+  @override
+  Future<List<Review>> getReviews(id) async {
+
+    final List<dynamic> response = await _supabase.from('AVIS').select().eq('id_utilisateur', id);
+    List<Review> reviews = response.map((data) {
+      return Review.fromJson(data as Map<String, dynamic>);
+    }).toList();
+
+    return reviews;
+  }
+  @override
+  Future<void> deleteReview(int id) async {
+    await _supabase.from('AVIS').delete().eq('id_avis', id);
+  }
+
+  @override
+  Future<Restaurant> getRestaurantById(int id) async {
+    final response = await _supabase.from('RESTAURANT').select().eq('id_restaurant', id);
+    return Restaurant.fromMap(response[0] as Map<String, dynamic>);
   }
 
   @override

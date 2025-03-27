@@ -114,4 +114,8 @@ class Restaurant {
     if (value is String) return int.tryParse(value) ?? 0;
     return 0;
   }
+
+  String getNom() {
+    return name;
+  }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:sae_mobile/components/review.dart';
 
 import 'i_database.dart';
 import 'restaurant.dart';
@@ -30,6 +31,11 @@ class DatabaseHelper {
   }
 
   static Future<List<Restaurant>> getRestaurants() => _database.getRestaurants();
+
+  static Future<List<Review>> getReviews(int id) => _database.getReviews(id);
+
+  static Future<void> deleteReview(int id) => _database.deleteReview(id);
+  static Future<Restaurant> getRestaurantById(int id) => _database.getRestaurantById(id);
 
   static Future<String> imageLink(String restauName) async {
     if (!_isJsonLoaded) {
