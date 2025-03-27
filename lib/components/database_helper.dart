@@ -9,28 +9,43 @@ import 'sqlite_database.dart';
 import 'supabase_database.dart';
 
 class DatabaseHelper {
-  static late IDatabase _database;
-  static late List<dynamic> _jsonData;
+  static IDatabase? _database;
+  static List<dynamic>? _jsonData;
   static bool _isJsonLoaded = false;
 
   static const String DEFAULT_IMAGE = "https://raw.githubusercontent.com/Purukitto/pokemon-data.json/refs/heads/master/images/items/sprites/1.png";
 
 
-  static Future<void> initialize() async {
-    IDatabase supabaseDB = SupabaseDatabase();
-    await supabaseDB.initialize();
+  static Future<IDatabase> initialize() async {
+    try {
+      IDatabase supabaseDB = SupabaseDatabase();
+      await supabaseDB.initialize();
 
-    if (supabaseDB.isConnected()) {
-      _database = supabaseDB;
-      print("Connexion : Supabase");
-    } else {
+      if (supabaseDB.isConnected()) {
+        _database = supabaseDB;
+        print("Connexion : Supabase");
+
+        return _database!;
+      } else {
+        _database = SQLiteDatabase();
+        await _database!.initialize();
+        print("Connexion : SQLite");
+
+        return _database!;
+      }
+    } catch (e) {
       _database = SQLiteDatabase();
-      await _database.initialize();
-      print("Connexion : SQLite");
+      await _database!.initialize();
+      print("Connexion : SQLite (erreur complète)");
+      
+      return _database!;
     }
   }
 
-  static Future<List<Restaurant>> getRestaurants() => _database.getRestaurants();
+  static Future<List<Restaurant>> getRestaurants() async {
+    if (_database == null) await initialize();
+    return _database!.getRestaurants();
+  }
 
   static Future<List<Review>> getReviews(int id) => _database.getReviews(id);
 
@@ -42,9 +57,11 @@ class DatabaseHelper {
       await loadJsonData();
     }
 
-    for (var restaurant in _jsonData) {
-      if (restaurant['name'] == restauName) {
-        return restaurant['image_url'];
+    if (_jsonData != null) {
+      for (var restaurant in _jsonData!) {
+        if (restaurant['name'] == restauName) {
+          return restaurant['image_url'] ?? DEFAULT_IMAGE;
+        }
       }
     }
     return DEFAULT_IMAGE;
@@ -52,9 +69,14 @@ class DatabaseHelper {
 
   static Future<void> loadJsonData() async {
     if (!_isJsonLoaded) {
-      String jsonString = await rootBundle.loadString('assets/images.json');
-      _jsonData = json.decode(jsonString);
-      _isJsonLoaded = true;
+      try {
+        String jsonString = await rootBundle.loadString('assets/images.json');
+        _jsonData = json.decode(jsonString);
+        _isJsonLoaded = true;
+      } catch (e) {
+        print('Erreur de chargement des données JSON : $e');
+        _jsonData = [];
+      }
     }
   }
 }

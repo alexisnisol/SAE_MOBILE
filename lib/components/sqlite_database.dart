@@ -5,17 +5,33 @@ import 'i_database.dart';
 import 'review.dart';
 
 class SQLiteDatabase implements IDatabase {
-  static late Database _database;
+  static Database? _database;
 
   @override
   Future<void> initialize() async {
-    String path = join(await getDatabasesPath(), 'assets/database.db');
-    _database = await openDatabase(path, version: 1);
+    if (_database != null) {
+      return;
+    }
+    try {
+      String path = join(await getDatabasesPath(), 'assets/database.db');
+      _database = await openDatabase(
+        path, 
+        version: 1, 
+        onCreate: (Database db, int version) async {
+          await db.execute(
+            'SELECT * FROM RESTAURANT'
+          );
+        }
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
   Future<List<Restaurant>> getRestaurants() async {
-    final List<Map<String, dynamic>> maps = await _database.query('RESTAURANT');
+    if (_database == null) await initialize();
+    final List<Map<String, dynamic>> maps = await _database!.query('RESTAURANT');
     return maps.map((map) => Restaurant.fromMap(map)).toList();
   }
 
@@ -36,7 +52,7 @@ class SQLiteDatabase implements IDatabase {
 
   @override
   bool isConnected() {
-    return true;
+    return _database != null;
   }
 }
 

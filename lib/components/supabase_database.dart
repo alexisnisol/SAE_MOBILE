@@ -9,26 +9,39 @@ class SupabaseDatabase implements IDatabase {
   static bool _isInitialized = false;
   late final SupabaseClient _supabase;
 
+  static String _supabaseUrl = 'https://rwvhbldaozvrcotlajbs.supabase.co';
+  static String _supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3dmhibGRhb3p2cmNvdGxhamJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczODgwMTUsImV4cCI6MjA1Mjk2NDAxNX0.ouVnoV0SrQsPGNpFqe2wzOXwgZbCUi9IEXsoidca5aE';
+
   @override
   Future<void> initialize() async {
     if (!_isInitialized) {
-      await Supabase.initialize(
-        url: 'https://rwvhbldaozvrcotlajbs.supabase.co',
-        anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3dmhibGRhb3p2cmNvdGxhamJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczODgwMTUsImV4cCI6MjA1Mjk2NDAxNX0.ouVnoV0SrQsPGNpFqe2wzOXwgZbCUi9IEXsoidca5aE',
-      );
-      _isInitialized = true;
+      try {
+        await Supabase.initialize(
+          url: _supabaseUrl,
+          anonKey: _supabaseAnonKey,
+        );
+        _isInitialized = true;
+      } catch (e) {
+        print(e);
+        _isInitialized = false;
+      }
     }
     _supabase = Supabase.instance.client;
   }
 
   @override
   Future<List<Restaurant>> getRestaurants() async {
-    final List<dynamic> response = await _supabase.from('RESTAURANT').select();
-    List<Restaurant> restaurants = response.map((data) {
-      return Restaurant.fromMap(data as Map<String, dynamic>);
-    }).toList();
+    if (!_isInitialized) await initialize();
 
-    return restaurants;
+    try {
+      final List<dynamic> response = await _supabase.from('RESTAURANT').select();
+      return response.map((data) => 
+        Restaurant.fromMap(data as Map<String, dynamic>)
+      ).toList();
+    } catch (e) {
+      print('Erreur de récupération des restaurants depuis Supabase : $e');
+      return [];
+    }
   }
   @override
   Future<List<Review>> getReviews(id) async {
