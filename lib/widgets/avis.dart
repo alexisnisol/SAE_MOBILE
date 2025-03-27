@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/components/review.dart';
 import '../components/database_helper.dart';
+import 'package:sae_mobile/components/restaurant.dart';
 
 class AvisPage extends StatefulWidget {
   const AvisPage({super.key});
@@ -16,17 +17,18 @@ class _AvisPageState extends State<AvisPage> {
   @override
   void initState() {
     super.initState();
-    futureReviews = DatabaseHelper.getReviews(1);
+    _loadReviews();
   }
 
-  void _deleteReview(int id) {
+  void _loadReviews() {
     setState(() {
-      futureReviews = futureReviews.then((reviews) {
-        reviews.removeWhere((review) => review.id == id);
-        DatabaseHelper.deleteReview(id);
-        return reviews;
-      });
+      futureReviews = DatabaseHelper.getReviews(1);
     });
+  }
+
+  Future<void> _deleteReview(int id) async {
+    await DatabaseHelper.deleteReview(id);
+    _loadReviews(); // Recharge la liste après suppression
   }
 
   Widget _buildStarRating(int rating) {
@@ -73,27 +75,25 @@ class _AvisPageState extends State<AvisPage> {
               itemBuilder: (context, index) {
                 final review = reviews[index];
 
-                return FutureBuilder<dynamic>(
+                return FutureBuilder<Restaurant>(
                   future: DatabaseHelper.getRestaurantById(review.restaurantId),
                   builder: (context, restaurantSnapshot) {
-                    if (restaurantSnapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (restaurantSnapshot.hasError || restaurantSnapshot.data == null) {
-                      return const ListTile(
-                        title: Text("Nom du restaurant indisponible"),
+                    if (!restaurantSnapshot.hasData) {
+                      return const SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Center(child: CircularProgressIndicator()),
                       );
                     }
 
-                    final restaurant = restaurantSnapshot.data;
-                    String restaurantName = restaurant.name ?? "Nom inconnu";
+                    final restaurant = restaurantSnapshot.data!;
 
                     return FutureBuilder<String>(
-                      future: DatabaseHelper.imageLink(restaurantName),
+                      future: DatabaseHelper.imageLink(restaurant.name), // Correction ici
                       builder: (context, imageSnapshot) {
                         String? imageUrl = imageSnapshot.data;
-                        bool imageLoaded = imageSnapshot.connectionState == ConnectionState.done && imageUrl != null;
+                        bool imageLoaded =
+                            imageSnapshot.connectionState == ConnectionState.done && imageUrl != null;
 
                         return Card(
                           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -109,7 +109,7 @@ class _AvisPageState extends State<AvisPage> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image.asset(
-                                    'assets/images/default_restaurant.png', // Image par défaut
+                                    'assets/images/default_restaurant.png',
                                     width: 50,
                                     height: 50,
                                     fit: BoxFit.cover,
@@ -131,11 +131,6 @@ class _AvisPageState extends State<AvisPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "Restaurant: $restaurantName",
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 4),
                                   _buildStarRating(review.etoiles),
                                   const SizedBox(height: 4),
                                   Text(

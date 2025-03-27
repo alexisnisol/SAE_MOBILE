@@ -30,6 +30,10 @@ class DatabaseHelper {
     }
   }
 
+  static void setDatabase(IDatabase db) {
+    _database = db;
+  }
+
   static Future<List<Restaurant>> getRestaurants() => _database.getRestaurants();
 
   static Future<List<Review>> getReviews(int id) => _database.getReviews(id);
