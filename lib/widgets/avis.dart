@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/components/review.dart';
 import '../components/database_helper.dart';
-import 'package:sae_mobile/components/restaurant.dart';
+import '../components/restaurant.dart';
 
 class AvisPage extends StatefulWidget {
   const AvisPage({super.key});
@@ -74,7 +74,6 @@ class _AvisPageState extends State<AvisPage> {
               itemCount: reviews.length,
               itemBuilder: (context, index) {
                 final review = reviews[index];
-
                 return FutureBuilder<Restaurant>(
                   future: DatabaseHelper.getRestaurantById(review.restaurantId),
                   builder: (context, restaurantSnapshot) {
@@ -85,16 +84,13 @@ class _AvisPageState extends State<AvisPage> {
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
-
                     final restaurant = restaurantSnapshot.data!;
-
                     return FutureBuilder<String>(
-                      future: DatabaseHelper.imageLink(restaurant.name), // Correction ici
+                      future: DatabaseHelper.imageLink(restaurant.name),
                       builder: (context, imageSnapshot) {
                         String? imageUrl = imageSnapshot.data;
                         bool imageLoaded =
                             imageSnapshot.connectionState == ConnectionState.done && imageUrl != null;
-
                         return Card(
                           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           child: ListTile(
@@ -131,6 +127,13 @@ class _AvisPageState extends State<AvisPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Text(
+                                    restaurant.name, // Affichage du nom du restaurant
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                   _buildStarRating(review.etoiles),
                                   const SizedBox(height: 4),
                                   Text(

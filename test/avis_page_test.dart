@@ -14,6 +14,7 @@ void main() {
   setUp(() {
     mockDatabase = MockIDatabase();
 
+    // Créer une liste d'avis de test
     fakeReviews = [
       Review(
         id: 1,
@@ -33,7 +34,7 @@ void main() {
       ),
     ];
 
-    // Stub pour getRestaurantById
+    // Configuration du mock pour getRestaurantById
     when(mockDatabase.getRestaurantById(any)).thenAnswer((_) async =>
         Restaurant(
           id_restaurant: 1,
@@ -69,48 +70,54 @@ void main() {
           longitude: 0,
         ));
 
-    // Stub pour getReviews
-    when(mockDatabase.getReviews(1)).thenAnswer((_) async => fakeReviews);
+    // Configuration du mock pour imageLink
+    when(mockDatabase.imageLink(any))
+        .thenAnswer((_) async => 'https://example.com/default.png');
 
-    // Stub pour deleteReview
+    // Utilisation de la liste copiée pour éviter des problèmes de référence
+    when(mockDatabase.getReviews(1))
+        .thenAnswer((_) async => List<Review>.from(fakeReviews));
+
+    // Comportement personnalisé pour deleteReview
     when(mockDatabase.deleteReview(any)).thenAnswer((invocation) async {
-      final int idToDelete = invocation.positionalArguments[0];
-      fakeReviews.removeWhere((review) => review.id == idToDelete);
-      print("Avis supprimé !");
+      final int reviewId = invocation.positionalArguments[0];
+      print("Avis supprimé ! ID: $reviewId");
+
+      // Supprimer l'avis avec l'ID spécifié
+      fakeReviews.removeWhere((review) => review.id == reviewId);
+
+      // Mise à jour du mock pour retourner la liste modifiée
+      when(mockDatabase.getReviews(1))
+          .thenAnswer((_) async => List<Review>.from(fakeReviews));
     });
 
-    // Stub pour imageLink
-    when(mockDatabase.imageLink(any)).thenAnswer(
-            (_) async => 'https://example.com/default.png');
-
+    // Définir la base de données mockée
     DatabaseHelper.setDatabase(mockDatabase);
   });
+
   testWidgets('Affichage et suppression des avis', (WidgetTester tester) async {
-    // Simuler `getReviews`
-    when(mockDatabase.getReviews(1)).thenAnswer((_) async => fakeReviews);
-
-    // Simuler `deleteReview`
-    when(mockDatabase.deleteReview(any)).thenAnswer((_) async {
-      fakeReviews.removeAt(0); // Supprime l'avis de la liste simulée
-    });
-
-    // Démarrer l'application avec AvisPage
+    // Lancer la page des avis
     await tester.pumpWidget(MaterialApp(home: AvisPage()));
 
-    // Attendre que tout soit chargé
-    await tester.pump(Duration(seconds: 1));
+    // Attendre que tous les FutureBuilders se résolvent
+    // On utilise une boucle de pump pour éviter que pumpAndSettle ne timeout
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
 
-    // Vérification : Les avis fictifs sont affichés
+    // Vérification : Les avis sont affichés
     expect(find.text("Great food"), findsOneWidget);
     expect(find.text("Excellent service!"), findsOneWidget);
 
-    // Vérification : Suppression d'un avis
-    final deleteButton = find.byIcon(Icons.delete).first;
-    await tester.tap(deleteButton);
-    await tester.pump(); // Première mise à jour de l'UI
+    // Vérification : Présence des boutons de suppression
+    expect(find.byIcon(Icons.delete), findsNWidgets(2));
 
-    // Attendre et vérifier que l'UI se met bien à jour
-    await tester.pump(const Duration(seconds: 1));
+    // Suppression du premier avis
+    await tester.tap(find.byIcon(Icons.delete).first);
+    // On attend à nouveau que l'UI se mette à jour
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
 
     // Vérification : L'avis supprimé ne doit plus être visible
     expect(find.text("Great food"), findsNothing);
