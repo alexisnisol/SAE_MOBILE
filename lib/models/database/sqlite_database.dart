@@ -78,6 +78,18 @@ class SQLiteDatabase implements IDatabase {
     // TODO: implement likeCuisine
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> addReview(int userId, int restauId, String avis, int etoiles, DateTime date) {
+    // TODO: implement addReview
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Review>> getReviewsRestau(int restauId) {
+    // TODO: implement getReviewsRestau
+    throw UnimplementedError();
+  }
 }
 
 

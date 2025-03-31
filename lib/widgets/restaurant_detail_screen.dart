@@ -17,6 +17,9 @@ class RestaurantDetailPage extends StatefulWidget {
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   Map<int, bool> likedCuisines = {};
+  final TextEditingController _avisController = TextEditingController();
+  int _selectedRating = 3;
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Restaurant>(
@@ -239,23 +242,63 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ],
                         ),
 
-                      // Section des avis
                       SizedBox(height: 16),
                       Divider(),
 
-                      // Connexion pour avis
-                      SizedBox(height: 8),
-                      Center(
-                        child: Text(
-                          "Veuillez vous connecter pour laisser un avis...",
-                          style: TextStyle(color: Colors.grey),
+                      if (RestaurantDetailPage.CURRENT_USER_ID != null) ...[
+                        SizedBox(height: 16),
+                        Text('Laisser un avis :', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Note : ", style: TextStyle(fontWeight: FontWeight.bold)),
+                            Row(
+                              children: List.generate(
+                                5,
+                                    (index) => IconButton(
+                                  icon: Icon(
+                                    index < _selectedRating ? Icons.star : Icons.star_border,
+                                    color: Colors.amber,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _selectedRating = index + 1;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                        SizedBox(height: 8),
+
+                        TextField(
+                          controller: _avisController,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            hintText: "Votre avis...",
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+
+                        // Bouton d'envoi
+                        ElevatedButton(
+                          onPressed: _submitReview,
+                          child: Text("Envoyer l'avis"),
+                        ),
+                      ] else
+                        Center(
+                          child: Text(
+                            "Veuillez vous connecter pour laisser un avis...",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
 
                       Text('Les avis :', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       SizedBox(height: 8),
                       FutureBuilder<List<Review>>(
-                        future: DatabaseHelper.getReviews(widget.restaurantId),
+                        future: DatabaseHelper.getReviewsRestau(widget.restaurantId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return Text("Chargement des avis...");
@@ -415,4 +458,27 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     ],
     );
   }
+
+  void _submitReview() async {
+    if (_avisController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Veuillez écrire un avis avant d'envoyer.")),
+      );
+      return;
+    }
+
+    await DatabaseHelper.addReview(RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId, _avisController.text, _selectedRating, DateTime.now());
+
+    // Effacer le champ après soumission
+    _avisController.clear();
+    setState(() {
+      _selectedRating = 3; // Réinitialiser à 3 étoiles
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Avis ajouté avec succès !")),
+    );
+  }
 }
+
+

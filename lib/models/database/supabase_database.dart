@@ -53,6 +53,35 @@ class SupabaseDatabase implements IDatabase {
 
     return reviews;
   }
+
+  @override
+  Future<List<Review>> getReviewsRestau(int restauId) async {
+    final List<dynamic> response = await _supabase.from('AVIS').select().eq('id_restaurant', restauId);
+    List<Review> reviews = response.map((data) {
+      return Review.fromJson(data as Map<String, dynamic>);
+    }).toList();
+
+    return reviews;
+  }
+
+  Future<int> idMaxAvis() async {
+    final response = await _supabase
+        .from("AVIS")
+        .select("id_avis")
+        .order("id_avis", ascending: false)
+        .limit(1)
+        .single();
+
+    return response["id_avis"] ?? 0;
+  }
+
+  @override
+  Future<void> addReview(int userId, int restauId, String avis, int etoiles, DateTime date) async {
+    int idAvis = await idMaxAvis();
+    idAvis++;
+    await _supabase.from("AVIS").insert({"id_avis": idAvis, "id_utilisateur": userId, "id_restaurant": restauId, "etoile": etoiles, "avis": avis, "date_avis": date.toIso8601String()});
+  }
+
   @override
   Future<void> deleteReview(int id) async {
     await _supabase.from('AVIS').delete().eq('id_avis', id);

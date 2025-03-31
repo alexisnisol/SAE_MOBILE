@@ -52,8 +52,11 @@ class DatabaseHelper {
   }
 
   static Future<List<Review>> getReviews(int id) => _database!.getReviews(id);
+  static Future<List<Review>> getReviewsRestau(int id) => _database!.getReviewsRestau(id);
 
   static Future<void> deleteReview(int id) => _database!.deleteReview(id);
+  static Future<void> addReview(int userId, int restauId, String avis, int etoiles, DateTime date) => _database!.addReview(userId, restauId, avis, etoiles, date);
+
   static Future<Restaurant> getRestaurantById(int id) => _database!.getRestaurantById(id);
 
   static Future<String> imageLink(String restauName) async {
