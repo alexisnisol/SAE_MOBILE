@@ -11,5 +11,9 @@ abstract class IDatabase {
   Future<void> deleteReview(int id);
   Future<Restaurant> getRestaurantById(int id);
   bool isConnected();
+  Future<bool> estCuisineLike(int userId, int cuisineId);
+  Future<void> likeCuisine(int userId, int cuisineId);
+  Future<void> dislikeCuisine(int userId, int cuisineId);
+
 
 }

@@ -4,16 +4,23 @@ import '../models/restaurant.dart';
 import '../models/database/database_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class RestaurantDetailPage extends StatelessWidget {
+class RestaurantDetailPage extends StatefulWidget {
   final int restaurantId;
-  static const int CURRENT_USER_ID = 1;
+  static int? CURRENT_USER_ID = 1;
 
   const RestaurantDetailPage({Key? key, required this.restaurantId}) : super(key: key);
 
   @override
+  _RestaurantDetailPageState createState() => _RestaurantDetailPageState();
+}
+
+
+class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
+  Map<int, bool> likedCuisines = {};
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<Restaurant>(
-      future: DatabaseHelper.getRestaurantById(restaurantId),
+      future: DatabaseHelper.getRestaurantById(widget.restaurantId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -114,7 +121,7 @@ class RestaurantDetailPage extends StatelessWidget {
 
                       // Type de cuisine
                       FutureBuilder<List<Map<String, dynamic>>>(
-                        future: DatabaseHelper.getTypeCuisineRestaurant(restaurantId),
+                        future: DatabaseHelper.getTypeCuisineRestaurant(widget.restaurantId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return Text("Chargement des types de cuisine...");
@@ -133,10 +140,55 @@ class RestaurantDetailPage extends StatelessWidget {
                                 child: Wrap(
                                   spacing: 8,
                                   children: cuisines.map((cuisine) {
-                                    return Chip(
-                                      label: Text(cuisine["cuisine"]),
-                                      // backgroundColor: Colors.green.shade100,
-                                    );
+                                    if (RestaurantDetailPage.CURRENT_USER_ID != null) {
+                                      return FutureBuilder<bool>(
+                                        future: likedCuisines.containsKey(cuisine["id"])
+                                            ? Future.value(likedCuisines[cuisine["id"]])
+                                            : DatabaseHelper.estCuisineLike(RestaurantDetailPage.CURRENT_USER_ID!, cuisine["id"]),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return SizedBox(width: 24, height: 24);
+                                          }
+                                          bool isLiked = snapshot.data ?? false;
+                                          return Chip(
+                                            label: GestureDetector(
+                                              onTap: () async {
+                                                bool newLikeStatus = !isLiked;
+                                                DatabaseHelper.toggleCuisineLike(RestaurantDetailPage.CURRENT_USER_ID!, cuisine["id"], newLikeStatus);
+
+                                                setState(() {
+                                                  likedCuisines[cuisine["id"]] = newLikeStatus;
+                                                });
+                                              },
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    isLiked ? Icons.favorite : Icons.favorite_border,
+                                                    size: 16,
+                                                    color: Colors.red,
+                                                  ),
+                                                  SizedBox(width: 4),
+                                                  Text(cuisine["cuisine"]),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      // Cas où l'utilisateur n'est pas connecté
+                                      return Chip(
+                                        label: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.restaurant, size: 16, color: Colors.grey),
+                                            SizedBox(width: 4),
+                                            Text(cuisine["cuisine"]),
+                                          ],
+                                        ),
+                                      );
+                                    }
                                   }).toList(),
                                 ),
                               ),
@@ -203,7 +255,7 @@ class RestaurantDetailPage extends StatelessWidget {
                       Text('Les avis :', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       SizedBox(height: 8),
                       FutureBuilder<List<Review>>(
-                        future: DatabaseHelper.getReviews(restaurantId),
+                        future: DatabaseHelper.getReviews(widget.restaurantId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return Text("Chargement des avis...");

@@ -85,7 +85,17 @@ class DatabaseHelper {
   }
 
   static Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(id_restaurant) {
-    Future<List<Map<String, dynamic>>> data =  _database!.getTypeCuisineRestaurant(id_restaurant);
-    return data;
+    return _database!.getTypeCuisineRestaurant(id_restaurant);
+  }
+
+  static Future<bool> estCuisineLike(int userId, int cuisineId) async {
+    return _database!.estCuisineLike(userId, cuisineId);
+  }
+
+  static void toggleCuisineLike(int userId, int cuisineId, bool isLiked) async {
+    if (isLiked) {
+      await _database!.likeCuisine(userId, cuisineId);
+    }
+    await _database!.dislikeCuisine(userId, cuisineId);
   }
 }

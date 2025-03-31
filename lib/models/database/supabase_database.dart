@@ -86,4 +86,36 @@ class SupabaseDatabase implements IDatabase {
       "cuisine": row["TYPE_CUISINE"]["cuisine"]
     }).toList();
   }
+
+  @override
+  Future<bool> estCuisineLike(int userId, int cuisineId) async {
+    final response = await _supabase.from("CUISINE_AIME").select().eq("id_utilisateur", userId).eq("id_cuisine", cuisineId);
+
+    if (response.isEmpty) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  Future<void> dislikeCuisine(int userId, int cuisineId) async {
+    await _supabase.from("CUISINE_AIME").delete().eq("id_utilisateur", userId).eq("id_cuisine", cuisineId);
+  }
+
+  @override
+  Future<void> likeCuisine(int userId, int cuisineId) async {
+    print("Début de likeCuisine");
+    try {
+      final response = await _supabase
+          .from("CUISINE_AIME")
+          .insert({"id_utilisateur": userId, "id_cuisine": cuisineId});
+
+      // !!! Attention laisser : print("Error: ${response.error}");
+      // !!! Sinon insertion non fonctionnel
+      print("Error: ${response.error}");
+    } catch (e) {
+      print("Erreur lors de l'insertion: $e");
+      throw e;
+    }
+  }
 }
