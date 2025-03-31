@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sae_mobile/widgets/auth/login.dart';
-import 'package:sae_mobile/widgets/home.dart';
-import 'package:sae_mobile/widgets/carte_screen.dart';
 import 'package:sae_mobile/widgets/avis.dart';
-
+import 'package:sae_mobile/widgets/carte_screen.dart';
+import 'package:sae_mobile/widgets/home.dart';
 
 import '../widgets/auth/register.dart';
+import '../widgets/auth/auth_screen.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
@@ -42,7 +41,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/login',
-          builder: (context, state) => LoginScreen()
+          builder: (context, state) => AuthScreen()
         ),
       ],
     )

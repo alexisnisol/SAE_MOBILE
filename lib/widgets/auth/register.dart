@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/components/auth/auth_welcome.dart';
 import 'package:sae_mobile/components/auth/register_form.dart';
-import '../../components/auth/circle_logo.dart';
+
 import '../../components/auth/switch_auth_button.dart';
-import '../../components/form/input_text_style.dart';
 
 class RegisterScreen extends StatefulWidget {
 

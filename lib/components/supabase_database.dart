@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sae_mobile/components/database_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../models/user.dart';
 import 'i_database.dart';
 import 'restaurant.dart';
-import '../models/user.dart';
-import 'sqlite_database.dart';
 
 class SupabaseDatabase implements IDatabase {
   static bool _isInitialized = false;
@@ -51,8 +50,6 @@ class SupabaseDatabase implements IDatabase {
     return users.isNotEmpty;
   }
 
-  //https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui
-  //https://supabase.com/docs/guides/auth/managing-user-data?queryGroups=language&language=dart
   Future<void> signUpNewUser(String email, String password) async {
     final AuthResponse res = await _supabase.auth.signInWithPassword(
         email: email,
