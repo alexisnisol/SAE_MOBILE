@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:sae_mobile/models/review.dart';
 import '../models/restaurant.dart';
 import '../models/database/database_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantDetailPage extends StatelessWidget {
   final int restaurantId;
+  static const int CURRENT_USER_ID = 1;
 
   const RestaurantDetailPage({Key? key, required this.restaurantId}) : super(key: key);
 
@@ -188,25 +190,90 @@ class RestaurantDetailPage extends StatelessWidget {
                       // Section des avis
                       SizedBox(height: 16),
                       Divider(),
-                      Text('Les avis :', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text("${restaurant.name} n'as pas d'avis pour le moment."),
-                      ),
 
                       // Connexion pour avis
-                      SizedBox(height: 16),
+                      SizedBox(height: 8),
                       Center(
                         child: Text(
                           "Veuillez vous connecter pour laisser un avis...",
                           style: TextStyle(color: Colors.grey),
                         ),
+                      ),
+
+                      Text('Les avis :', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 8),
+                      FutureBuilder<List<Review>>(
+                        future: DatabaseHelper.getReviews(restaurantId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Text("Chargement des avis...");
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text("${restaurant.name} n'a pas d'avis pour le moment."),
+                            );
+                          }
+                          final lesAvis = snapshot.data!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: lesAvis.map((avis) {
+                              return Container(
+                                width: double.infinity,
+                                margin: EdgeInsets.symmetric(vertical: 4),
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "Utilisateur ${avis.userId}",
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                        Spacer(),
+                                        Row(
+                                          children: List.generate(
+                                            5,
+                                                (index) => Icon(
+                                              index < avis.etoiles ? Icons.star : Icons.star_border,
+                                              color: Colors.amber,
+                                              size: 18,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      "${avis.date.day}/${avis.date.month}/${avis.date.year}",
+                                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    ),
+                                    SizedBox(height: 4),
+
+                                    Text(avis.avis),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
                       ),
 
                       // Section de localisation
@@ -274,7 +341,7 @@ class RestaurantDetailPage extends StatelessWidget {
     return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-        const Text("Services :", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text("Services : ", style: TextStyle(fontWeight: FontWeight.bold)),
         SizedBox(height: 4),
         Wrap(
         spacing: 8,
