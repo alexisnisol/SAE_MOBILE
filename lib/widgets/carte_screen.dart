@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../components/database_helper.dart';
-import '../components/restaurant.dart';
-import '../components/sqlite_database.dart';
+import '../models/database/database_helper.dart';
+import '../models/restaurant.dart';
+import '../models/database/sqlite_database.dart';
 
 class CarteScreen extends StatefulWidget {
   @override

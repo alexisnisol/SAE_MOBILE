@@ -1,9 +1,9 @@
-import 'package:sae_mobile/components/database_helper.dart';
+import 'package:sae_mobile/models/database/database_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'i_database.dart';
-import 'restaurant.dart';
+import '../restaurant.dart';
 import 'sqlite_database.dart';
-import 'review.dart';
+import '../review.dart';
 
 class SupabaseDatabase implements IDatabase {
   static bool _isInitialized = false;
@@ -67,5 +67,23 @@ class SupabaseDatabase implements IDatabase {
   @override
   bool isConnected() {
     return _isInitialized;
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(int id) async {
+    final response = await _supabase
+        .from("PROPOSER")
+        .select("id_cuisine, TYPE_CUISINE(cuisine)")
+        .eq("id_restaurant", id);
+
+    if (response.isEmpty) {
+      return []; // Retourne une liste vide si aucun type de cuisine trouvé
+    }
+
+    // Transformation des données pour extraire id et cuisine
+    return response.map<Map<String, dynamic>>((row) => {
+      "id": row["id_cuisine"],
+      "cuisine": row["TYPE_CUISINE"]["cuisine"]
+    }).toList();
   }
 }

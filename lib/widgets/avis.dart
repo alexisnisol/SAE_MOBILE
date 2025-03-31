@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sae_mobile/components/review.dart';
-import '../components/database_helper.dart';
+import 'package:sae_mobile/models/review.dart';
+import '../models/database/database_helper.dart';
 
 class AvisPage extends StatefulWidget {
   const AvisPage({super.key});

@@ -4,7 +4,7 @@ import 'package:sae_mobile/widgets/home.dart';
 import 'package:sae_mobile/widgets/carte_screen.dart';
 import 'package:sae_mobile/widgets/avis.dart';
 import 'package:sae_mobile/widgets/restaurant_detail_screen.dart';
-import '../components/database_helper.dart';
+import '../models/database/database_helper.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/',

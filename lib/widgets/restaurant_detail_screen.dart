@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../components/restaurant.dart';
-import '../components/database_helper.dart';
+import '../models/restaurant.dart';
+import '../models/database/database_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantDetailPage extends StatelessWidget {
@@ -70,6 +70,7 @@ class RestaurantDetailPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(restaurant.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40),),
                       // Lieu
                       _buildInfoWithData(
                         label: "Lieu : ",
@@ -87,7 +88,7 @@ class RestaurantDetailPage extends StatelessWidget {
                       // Téléphone (si disponible)
                       if (restaurant.phone != null && restaurant.phone!.isNotEmpty)
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text("Tel : ", style: TextStyle(fontWeight: FontWeight.bold)),
                             Text("📞 ${restaurant.phone!}"),
@@ -109,6 +110,39 @@ class RestaurantDetailPage extends StatelessWidget {
                       // Note moyenne (à implémenter si nécessaire)
                       // Vous pourriez ajouter une méthode pour récupérer la note moyenne
 
+                      // Type de cuisine
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: DatabaseHelper.getTypeCuisineRestaurant(restaurantId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Text("Chargement des types de cuisine...");
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return SizedBox.shrink(); // N'affiche rien si aucune cuisine n'est trouvée
+                          }
+
+                          final cuisines = snapshot.data!; // Liste des types de cuisine
+
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("Type de cuisine : ", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Expanded(
+                                child: Wrap(
+                                  spacing: 8,
+                                  children: cuisines.map((cuisine) {
+                                    return Chip(
+                                      label: Text(cuisine["cuisine"]),
+                                      // backgroundColor: Colors.green.shade100,
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+
                       // Services (si disponibles)
                       if (restaurant.wheelchair == true ||
                           restaurant.vegetarian == true ||
@@ -120,8 +154,6 @@ class RestaurantDetailPage extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Services : ", style: TextStyle(fontWeight: FontWeight.bold)),
-                            SizedBox(height: 4),
                             _buildServicesList(restaurant),
                           ],
                         ),
@@ -239,18 +271,29 @@ class RestaurantDetailPage extends StatelessWidget {
 
     if (services.isEmpty) return const SizedBox();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
         const Text("Services :", style: TextStyle(fontWeight: FontWeight.bold)),
-        ...services.map((service) => Row(
-          children: [
-            const Icon(Icons.check, color: Colors.green, size: 16),
-            const SizedBox(width: 5),
-            Text(service),
+        SizedBox(height: 4),
+        Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        children: services.map((service) {
+        return Chip(
+        label: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+            Icon(Icons.check, color: Colors.green, size: 16),
+          SizedBox(width: 4),
+          Text(service),
           ],
-        )),
-      ],
+        ),
+        // backgroundColor: Colors.blue.shade100, // Couleur de fond des Chips
+        );
+        }).toList(),
+        ),
+    ],
     );
   }
 }

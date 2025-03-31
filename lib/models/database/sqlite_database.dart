@@ -1,8 +1,8 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'restaurant.dart';
+import '../restaurant.dart';
 import 'i_database.dart';
-import 'review.dart';
+import '../review.dart';
 
 class SQLiteDatabase implements IDatabase {
   static Database? _database;
@@ -37,22 +37,28 @@ class SQLiteDatabase implements IDatabase {
 
   @override
   Future<List<Review>> getReviews(int id) async {
-    final List<Map<String, dynamic>> maps = await _database.query('AVIS', where: 'id_restaurant= ?', whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await _database!.query('AVIS', where: 'id_restaurant= ?', whereArgs: [id]);
     return maps.map((map) => Review.fromJson(map)).toList();
   }
   @override
   Future<void> deleteReview(int id) {
-    return _database.delete('AVIS', where: 'id_avis = ?', whereArgs: [id]);
+    return _database!.delete('AVIS', where: 'id_avis = ?', whereArgs: [id]);
   }
   @override
   Future<Restaurant> getRestaurantById(int id) async {
-    final List<Map<String, dynamic>> maps = await _database.query('RESTAURANT', where: 'id_restaurant = ?', whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await _database!.query('RESTAURANT', where: 'id_restaurant = ?', whereArgs: [id]);
     return Restaurant.fromMap(maps.first);
   }
 
   @override
   bool isConnected() {
     return _database != null;
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(int id) {
+    // TODO: implement getTypeCuisineRestaurant
+    throw UnimplementedError();
   }
 }
 
