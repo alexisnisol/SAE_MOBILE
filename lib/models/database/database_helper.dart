@@ -42,6 +42,10 @@ class DatabaseHelper {
     }
   }
 
+
+  static void setDatabase(IDatabase db) {
+    _database = db;
+  }
   static Future<List<Restaurant>> getRestaurants() async {
     if (_database == null) await initialize();
     return _database!.getRestaurants();
