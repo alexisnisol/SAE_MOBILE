@@ -24,7 +24,7 @@ class CarouselSection extends StatelessWidget {
         );
       }).toList(),
       options: CarouselOptions(
-        autoPlay: true,
+        autoPlay: false,
         autoPlayInterval: const Duration(seconds: 3),
         autoPlayAnimationDuration: const Duration(milliseconds: 800),
         viewportFraction: 0.7,
