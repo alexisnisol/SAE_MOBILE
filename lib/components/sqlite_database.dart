@@ -1,6 +1,6 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import '../models/user.dart';
+import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 import 'restaurant.dart';
 import 'i_database.dart';
 
@@ -20,15 +20,8 @@ class SQLiteDatabase implements IDatabase {
   }
 
   @override
-  Future<List<UserModel>> getUsers() async {
-    final List<Map<String, dynamic>> maps = await _database.query('UTILISATEUR');
-    return maps.map((map) => UserModel.fromMap(map)).toList();
-  }
-
-  @override
-  Future<bool> userExists(String email) async {
-    final List<Map<String, dynamic>> maps = await _database.query('UTILISATEUR', where: 'email = ?', whereArgs: [email]);
-    return maps.isNotEmpty;
+  GoTrueClient getAuth() {
+    throw UnimplementedError();
   }
 
   @override

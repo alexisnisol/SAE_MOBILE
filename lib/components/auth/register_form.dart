@@ -2,10 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:provider/provider.dart';
-
-import '../../models/user.dart';
-import '../../models/viewmodel/authentication_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import '../../models/auth_helper.dart';
 import '../form/input_text_style.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -43,57 +42,52 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
           SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState!.saveAndValidate()) {
                 final name = _formKey.currentState!.value['name'];
                 final email = _formKey.currentState!.value['email'];
                 final password = _formKey.currentState!.value['password'];
                 final confirmPassword = _formKey.currentState!.value['confirm_password'];
 
-                if (false) {
-                  if (!checkName(context, name)){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Le nom doit contenir uniquement des lettres")),
-                    );
-                    return;
-                  }
-
-                  if (!checkEmail(context, email)){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("L'email n'est pas valide")),
-                    );
-                    return;
-                  }
-
-                  if (!checkPasswordMatch(context, password, confirmPassword)){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Les mots de passe ne correspondent pas")),
-                    );
-                    return;
-                  }
-
-                  if (!checkPassword(context, password)){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre")),
-                    );
-                    return;
-                  }
+                if (!checkName(context, name)){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Le nom doit contenir uniquement des lettres")),
+                  );
+                  return;
                 }
 
-                final data = _formKey.currentState?.value;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Données : $data")),
-                );
-                try {
-                  context.read<AuthenticationService>().register(
-                      UserModel.createUser(
-                          _formKey.currentState!.fields['name']!.value,
-                          _formKey.currentState!.fields['email']!.value
-                      )
-                  );
-                } catch (e) {
+                if (!checkEmail(context, email)){
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Erreur: $e")),
+                    SnackBar(content: Text("L'email n'est pas valide")),
+                  );
+                  return;
+                }
+
+                if (!checkPasswordMatch(context, password, confirmPassword)){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Les mots de passe ne correspondent pas")),
+                  );
+                  return;
+                }
+
+                if (!checkPassword(context, password)){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre")),
+                  );
+                  return;
+                }
+
+                try {
+                  await AuthHelper.signUp(name, email, password);
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Inscription réussie")),
+                  );
+                  context.go('/login');
+                } catch (e) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("$e")),
                   );
                 }
               }

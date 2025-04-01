@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/components/review.dart';
+import 'package:sae_mobile/models/auth_helper.dart';
+import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 
 class AvisPage extends StatefulWidget {
@@ -47,9 +49,9 @@ class _AvisPageState extends State<AvisPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Avis',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: Colors.white,

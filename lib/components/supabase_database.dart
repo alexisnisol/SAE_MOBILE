@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/user.dart';
 import 'i_database.dart';
 import 'restaurant.dart';
 
@@ -32,32 +30,8 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
-  Future<List<UserModel>> getUsers() async {
-    final List<dynamic> response = await _supabase.from('UTILISATEUR').select();
-    List<UserModel> users = response.map((data) {
-      return UserModel.fromMap(data as Map<String, dynamic>);
-    }).toList();
-    debugPrint("Message" + users.toString());
-    return users;
-  }
-
-  @override
-  Future<bool> userExists(String email) async {
-    final List<dynamic> response = await _supabase.from('UTILISATEUR').select().eq('email', email);
-    List<UserModel> users = response.map((data) {
-      return UserModel.fromMap(data as Map<String, dynamic>);
-    }).toList();
-    return users.isNotEmpty;
-  }
-
-  Future<void> signUpNewUser(String email, String password) async {
-    final AuthResponse res = await _supabase.auth.signInWithPassword(
-        email: email,
-        password: password);
-  }
-
-  Future<void> signOut() async {
-    await _supabase.auth.signOut();
+  GoTrueClient getAuth() {
+    return _supabase.auth;
   }
 
   @override

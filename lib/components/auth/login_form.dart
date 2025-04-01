@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../models/auth_helper.dart';
 import '../form/input_text_style.dart';
 
 class LoginForm extends StatefulWidget {
@@ -26,12 +28,24 @@ class _LoginFormState extends State<LoginForm> {
           StyledTextField(name: "password", hintText: "Mot de passe", isRequired: true, isVisible: false, icon: Icons.lock),
           SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState?.saveAndValidate() ?? false) {
-                final data = _formKey.currentState?.value;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Données : \$data")),
-                );
+                final email = _formKey.currentState!.value['email'];
+                final password = _formKey.currentState!.value['password'];
+
+                try {
+                  await AuthHelper.signIn(email, password);
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Connexion réussie")),
+                  );
+                  context.go('/');
+                } catch (e) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("$e")),
+                  );
+                }
               }
             },
             style: ElevatedButton.styleFrom(
