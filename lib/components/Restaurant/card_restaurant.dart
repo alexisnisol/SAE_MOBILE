@@ -19,8 +19,8 @@ class RestaurantCard extends StatelessWidget {
     return Geolocator.distanceBetween(
       userPosition!.latitude,
       userPosition!.longitude,
-      restaurant.latitude as double,
-      restaurant.longitude as double,
+      restaurant.latitude,
+      restaurant.longitude,
     ) / 1000;
   }
 
