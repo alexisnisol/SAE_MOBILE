@@ -12,6 +12,9 @@ final GoRouter router = GoRouter(
   routes: [
     ShellRoute(
       builder: (BuildContext context, GoRouterState state, Widget child) {
+        if (!AuthHelper.isSignedIn()) {
+          return child;
+        }
         return HomeScreen(child: child);
       },
       routes: [
