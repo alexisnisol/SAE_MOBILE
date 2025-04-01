@@ -37,7 +37,7 @@ class DatabaseHelper {
       _database = SQLiteDatabase();
       await _database!.initialize();
       print("Connexion : SQLite (erreur complète)");
-      
+
       return _database!;
     }
   }
@@ -46,18 +46,28 @@ class DatabaseHelper {
   static void setDatabase(IDatabase db) {
     _database = db;
   }
+
   static Future<List<Restaurant>> getRestaurants() async {
     if (_database == null) await initialize();
     return _database!.getRestaurants();
   }
 
   static Future<List<Review>> getReviews(int id) => _database!.getReviews(id);
-  static Future<List<Review>> getReviewsRestau(int id) => _database!.getReviewsRestau(id);
+
+  static Future<List<Review>> getReviewsRestau(int id) =>
+      _database!.getReviewsRestau(id);
 
   static Future<void> deleteReview(int id) => _database!.deleteReview(id);
-  static Future<void> addReview(int userId, int restauId, String avis, int etoiles, DateTime date) => _database!.addReview(userId, restauId, avis, etoiles, date);
 
-  static Future<Restaurant> getRestaurantById(int id) => _database!.getRestaurantById(id);
+  static Future<void> addReview(int userId, int restauId, String avis,
+      int etoiles, DateTime date) =>
+      _database!.addReview(userId, restauId, avis, etoiles, date);
+
+  static Future<Restaurant> getRestaurantById(int id) =>
+      _database!.getRestaurantById(id);
+
+  static Future<List<int>> getRestaurantFavoris(int userId) =>
+      _database!.getRestaurantFavoris(userId);
 
   static Future<String> imageLink(String restauName) async {
     if (!_isJsonLoaded) {
@@ -87,7 +97,8 @@ class DatabaseHelper {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(id_restaurant) {
+  static Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(
+      id_restaurant) {
     return _database!.getTypeCuisineRestaurant(id_restaurant);
   }
 
@@ -100,5 +111,17 @@ class DatabaseHelper {
       await _database!.likeCuisine(userId, cuisineId);
     }
     await _database!.dislikeCuisine(userId, cuisineId);
+  }
+
+  static Future<void> deleteRestaurantFavoris(int userId, int restauId) async {
+    await _database!.deleteRestaurantFavoris(userId, restauId);
+  }
+
+  static Future<void> addRestaurantFavoris(int userId, int restauId) async {
+    await _database!.addRestaurantFavoris(userId, restauId);
+  }
+
+  static isRestaurantFavorited(int i, int restaurantId) {
+    return _database!.getRestaurantFavoris(i).then((value) => value.contains(restaurantId));
   }
 }

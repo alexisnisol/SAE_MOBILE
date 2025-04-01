@@ -5,7 +5,7 @@ import 'package:sae_mobile/widgets/carte_screen.dart';
 import 'package:sae_mobile/widgets/avis.dart';
 import 'package:sae_mobile/widgets/restaurant_detail_screen.dart';
 import '../models/database/database_helper.dart';
-
+import '../widgets/favoris.dart';
 final GoRouter router = GoRouter(
   initialLocation: '/',
   routes: [
@@ -20,7 +20,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/favoris',
-          builder: (context, state) => const Center(child: Text('Favoris')),
+          builder: (context, state) => Center( child: GroupedFavorisPage()),
         ),
         GoRoute(
           path: '/carte',

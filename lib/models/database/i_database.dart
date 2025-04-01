@@ -16,6 +16,10 @@ abstract class IDatabase {
   Future<bool> estCuisineLike(int userId, int cuisineId);
   Future<void> likeCuisine(int userId, int cuisineId);
   Future<void> dislikeCuisine(int userId, int cuisineId);
+  Future<List<int>> getRestaurantFavoris(int userId);
+  Future<void> deleteRestaurantFavoris(int userId, int restauId);
+  Future<void> addRestaurantFavoris(int userId, int restauId);
+  Future<bool> isRestaurantFavorited(int userId, int restauId);
 
 
 }

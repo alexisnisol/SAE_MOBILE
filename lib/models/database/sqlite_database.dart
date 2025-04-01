@@ -90,6 +90,32 @@ class SQLiteDatabase implements IDatabase {
     // TODO: implement getReviewsRestau
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<int>> getRestaurantFavoris(int userId) {
+    // TODO: implement getRestaurantFavoris
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteRestaurantFavoris(int userId, int restauId) {
+    // TODO: implement deleteRestaurantFavoris
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addRestaurantFavoris(int userId, int restauId) {
+    // TODO: implement addRestaurantFavoris
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isRestaurantFavorited(int userId, int restauId) {
+    // TODO: implement isRestaurantFavorited
+    throw UnimplementedError();
+  }
+
+  
 }
 
 
