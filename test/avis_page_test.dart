@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sae_mobile/components/review.dart';
+import 'package:sae_mobile/models/review.dart';
 import 'package:sae_mobile/widgets/avis.dart';
 import 'package:sae_mobile/components/database_helper.dart';
 import 'mock.mocks.dart';

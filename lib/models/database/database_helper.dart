@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:sae_mobile/components/review.dart';
+import 'package:sae_mobile/models/review.dart';
 
 import 'i_database.dart';
-import 'restaurant.dart';
+import '../restaurant.dart';
 import 'sqlite_database.dart';
 import 'supabase_database.dart';
 
@@ -49,11 +49,15 @@ class DatabaseHelper {
   static Future<List<Restaurant>> getRestaurants() async {
     if (_database == null) await initialize();
     return _database!.getRestaurants();
+  }
 
-  static Future<List<Review>> getReviews(int id) => _database.getReviews(id);
+  static Future<List<Review>> getReviews(int id) => _database!.getReviews(id);
+  static Future<List<Review>> getReviewsRestau(int id) => _database!.getReviewsRestau(id);
 
-  static Future<void> deleteReview(int id) => _database.deleteReview(id);
-  static Future<Restaurant> getRestaurantById(int id) => _database.getRestaurantById(id);
+  static Future<void> deleteReview(int id) => _database!.deleteReview(id);
+  static Future<void> addReview(int userId, int restauId, String avis, int etoiles, DateTime date) => _database!.addReview(userId, restauId, avis, etoiles, date);
+
+  static Future<Restaurant> getRestaurantById(int id) => _database!.getRestaurantById(id);
 
   static Future<String> imageLink(String restauName) async {
     if (!_isJsonLoaded) {
@@ -81,5 +85,20 @@ class DatabaseHelper {
         _jsonData = [];
       }
     }
+  }
+
+  static Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(id_restaurant) {
+    return _database!.getTypeCuisineRestaurant(id_restaurant);
+  }
+
+  static Future<bool> estCuisineLike(int userId, int cuisineId) async {
+    return _database!.estCuisineLike(userId, cuisineId);
+  }
+
+  static void toggleCuisineLike(int userId, int cuisineId, bool isLiked) async {
+    if (isLiked) {
+      await _database!.likeCuisine(userId, cuisineId);
+    }
+    await _database!.dislikeCuisine(userId, cuisineId);
   }
 }

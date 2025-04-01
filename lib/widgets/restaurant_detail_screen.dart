@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
-import '../components/restaurant.dart';
-import '../components/database_helper.dart';
+import 'package:sae_mobile/models/review.dart';
+import '../models/restaurant.dart';
+import '../models/database/database_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class RestaurantDetailPage extends StatelessWidget {
+class RestaurantDetailPage extends StatefulWidget {
   final int restaurantId;
+  static int? CURRENT_USER_ID = 1;
 
   const RestaurantDetailPage({Key? key, required this.restaurantId}) : super(key: key);
 
   @override
+  _RestaurantDetailPageState createState() => _RestaurantDetailPageState();
+}
+
+
+class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
+  Map<int, bool> likedCuisines = {};
+  final TextEditingController _avisController = TextEditingController();
+  int _selectedRating = 3;
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<Restaurant>(
-      future: DatabaseHelper.getRestaurantById(restaurantId),
+      future: DatabaseHelper.getRestaurantById(widget.restaurantId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -70,6 +82,7 @@ class RestaurantDetailPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(restaurant.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40),),
                       // Lieu
                       _buildInfoWithData(
                         label: "Lieu : ",
@@ -87,7 +100,7 @@ class RestaurantDetailPage extends StatelessWidget {
                       // Téléphone (si disponible)
                       if (restaurant.phone != null && restaurant.phone!.isNotEmpty)
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text("Tel : ", style: TextStyle(fontWeight: FontWeight.bold)),
                             Text("📞 ${restaurant.phone!}"),
@@ -109,6 +122,84 @@ class RestaurantDetailPage extends StatelessWidget {
                       // Note moyenne (à implémenter si nécessaire)
                       // Vous pourriez ajouter une méthode pour récupérer la note moyenne
 
+                      // Type de cuisine
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: DatabaseHelper.getTypeCuisineRestaurant(widget.restaurantId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Text("Chargement des types de cuisine...");
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return SizedBox.shrink(); // N'affiche rien si aucune cuisine n'est trouvée
+                          }
+
+                          final cuisines = snapshot.data!; // Liste des types de cuisine
+
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("Type de cuisine : ", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Expanded(
+                                child: Wrap(
+                                  spacing: 8,
+                                  children: cuisines.map((cuisine) {
+                                    if (RestaurantDetailPage.CURRENT_USER_ID != null) {
+                                      return FutureBuilder<bool>(
+                                        future: likedCuisines.containsKey(cuisine["id"])
+                                            ? Future.value(likedCuisines[cuisine["id"]])
+                                            : DatabaseHelper.estCuisineLike(RestaurantDetailPage.CURRENT_USER_ID!, cuisine["id"]),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return SizedBox(width: 24, height: 24);
+                                          }
+                                          bool isLiked = snapshot.data ?? false;
+                                          return Chip(
+                                            label: GestureDetector(
+                                              onTap: () async {
+                                                bool newLikeStatus = !isLiked;
+                                                DatabaseHelper.toggleCuisineLike(RestaurantDetailPage.CURRENT_USER_ID!, cuisine["id"], newLikeStatus);
+
+                                                setState(() {
+                                                  likedCuisines[cuisine["id"]] = newLikeStatus;
+                                                });
+                                              },
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    isLiked ? Icons.favorite : Icons.favorite_border,
+                                                    size: 16,
+                                                    color: Colors.red,
+                                                  ),
+                                                  SizedBox(width: 4),
+                                                  Text(cuisine["cuisine"]),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      // Cas où l'utilisateur n'est pas connecté
+                                      return Chip(
+                                        label: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.restaurant, size: 16, color: Colors.grey),
+                                            SizedBox(width: 4),
+                                            Text(cuisine["cuisine"]),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+
                       // Services (si disponibles)
                       if (restaurant.wheelchair == true ||
                           restaurant.vegetarian == true ||
@@ -120,8 +211,6 @@ class RestaurantDetailPage extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Services : ", style: TextStyle(fontWeight: FontWeight.bold)),
-                            SizedBox(height: 4),
                             _buildServicesList(restaurant),
                           ],
                         ),
@@ -153,28 +242,133 @@ class RestaurantDetailPage extends StatelessWidget {
                           ],
                         ),
 
-                      // Section des avis
                       SizedBox(height: 16),
                       Divider(),
+
+                      if (RestaurantDetailPage.CURRENT_USER_ID != null) ...[
+                        SizedBox(height: 16),
+                        Text('Laisser un avis :', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Note : ", style: TextStyle(fontWeight: FontWeight.bold)),
+                            Row(
+                              children: List.generate(
+                                5,
+                                    (index) => IconButton(
+                                  icon: Icon(
+                                    index < _selectedRating ? Icons.star : Icons.star_border,
+                                    color: Colors.amber,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _selectedRating = index + 1;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+
+                        TextField(
+                          controller: _avisController,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            hintText: "Votre avis...",
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+
+                        // Bouton d'envoi
+                        ElevatedButton(
+                          onPressed: _submitReview,
+                          child: Text("Envoyer l'avis"),
+                        ),
+                      ] else
+                        Center(
+                          child: Text(
+                            "Veuillez vous connecter pour laisser un avis...",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+
                       Text('Les avis :', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text("${restaurant.name} n'as pas d'avis pour le moment."),
-                      ),
+                      FutureBuilder<List<Review>>(
+                        future: DatabaseHelper.getReviewsRestau(widget.restaurantId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Text("Chargement des avis...");
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text("${restaurant.name} n'a pas d'avis pour le moment."),
+                            );
+                          }
+                          final lesAvis = snapshot.data!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: lesAvis.map((avis) {
+                              return Container(
+                                width: double.infinity,
+                                margin: EdgeInsets.symmetric(vertical: 4),
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "Utilisateur ${avis.userId}",
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                        Spacer(),
+                                        Row(
+                                          children: List.generate(
+                                            5,
+                                                (index) => Icon(
+                                              index < avis.etoiles ? Icons.star : Icons.star_border,
+                                              color: Colors.amber,
+                                              size: 18,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      "${avis.date.day}/${avis.date.month}/${avis.date.year}",
+                                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    ),
+                                    SizedBox(height: 4),
 
-                      // Connexion pour avis
-                      SizedBox(height: 16),
-                      Center(
-                        child: Text(
-                          "Veuillez vous connecter pour laisser un avis...",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                                    Text(avis.avis),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
                       ),
 
                       // Section de localisation
@@ -239,18 +433,52 @@ class RestaurantDetailPage extends StatelessWidget {
 
     if (services.isEmpty) return const SizedBox();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Services :", style: TextStyle(fontWeight: FontWeight.bold)),
-        ...services.map((service) => Row(
-          children: [
-            const Icon(Icons.check, color: Colors.green, size: 16),
-            const SizedBox(width: 5),
-            Text(service),
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+        const Text("Services : ", style: TextStyle(fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        children: services.map((service) {
+        return Chip(
+        label: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+            Icon(Icons.check, color: Colors.green, size: 16),
+          SizedBox(width: 4),
+          Text(service),
           ],
-        )),
-      ],
+        ),
+        // backgroundColor: Colors.blue.shade100, // Couleur de fond des Chips
+        );
+        }).toList(),
+        ),
+    ],
+    );
+  }
+
+  void _submitReview() async {
+    if (_avisController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Veuillez écrire un avis avant d'envoyer.")),
+      );
+      return;
+    }
+
+    await DatabaseHelper.addReview(RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId, _avisController.text, _selectedRating, DateTime.now());
+
+    // Effacer le champ après soumission
+    _avisController.clear();
+    setState(() {
+      _selectedRating = 3; // Réinitialiser à 3 étoiles
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Avis ajouté avec succès !")),
     );
   }
 }
+
+
