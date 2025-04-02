@@ -3,9 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/widgets/home.dart';
 import 'package:sae_mobile/widgets/carte_screen.dart';
 import 'package:sae_mobile/widgets/avis.dart';
+import 'package:sae_mobile/widgets/home_body.dart';
 import 'package:sae_mobile/widgets/restaurant_detail_screen.dart';
 import '../models/database/database_helper.dart';
 import '../widgets/favoris.dart';
+
+
 final GoRouter router = GoRouter(
   initialLocation: '/',
   routes: [
@@ -16,7 +19,7 @@ final GoRouter router = GoRouter(
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => const Center(child: Text('Accueil')),
+          builder: (context, state) => HomeBodyScreen(),
         ),
         GoRoute(
           path: '/favoris',
@@ -24,11 +27,11 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/carte',
-          builder: (context, state) => Center(child: CarteScreen()),
+          builder: (context, state) =>  Center(child: CarteScreen()),
         ),
         GoRoute(
           path: '/avis',
-          builder: (context, state) => Center(child: AvisPage()),
+          builder: (context, state) =>  Center(child: AvisPage()),
         ),
         GoRoute(
           path: '/profil',
