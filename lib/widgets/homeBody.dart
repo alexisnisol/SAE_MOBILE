@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../components/Restaurant/build_carousel.dart';
 
 class HomeBody extends StatelessWidget {
   const HomeBody({super.key});
