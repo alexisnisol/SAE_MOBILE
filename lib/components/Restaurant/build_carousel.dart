@@ -15,25 +15,29 @@ class RestaurantCarousel extends StatefulWidget {
 
 class _RestaurantCarouselState extends State<RestaurantCarousel> {
   late Future<List<Restaurant>> _restaurantsFuture;
+  late Future<void> _locationFuture;
   final LocationService _locationService = LocationService();
 
   @override
   void initState() {
     super.initState();
     _restaurantsFuture = DatabaseHelper.getRestaurants();
-    _locationService.getUserLocation();
+    _locationFuture = _locationService.getUserLocation();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Restaurant>>(
-      future: _restaurantsFuture,
-      builder: (context, snapshot) {
+    return FutureBuilder(
+      future: Future.wait([_restaurantsFuture, _locationFuture]),
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Erreur: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        }
+
+        final restaurants = snapshot.data![0] as List<Restaurant>;
+        if (restaurants.isEmpty) {
           return const Center(child: Text('Aucun restaurant disponible'));
         }
 
@@ -54,8 +58,8 @@ class _RestaurantCarouselState extends State<RestaurantCarousel> {
                 ),
               ),
             CarouselSection(
-              restaurants: snapshot.data!,
-              userPosition: _locationService.userPosition,
+              restaurants: restaurants,
+              locationService: _locationService, // Passez le service complet
             ),
           ],
         );

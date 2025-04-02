@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import '../../models/location_service.dart';
 import '../../models/restaurant.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -7,12 +8,12 @@ import 'card_restaurant.dart';
 
 class CarouselSection extends StatelessWidget {
   final List<Restaurant> restaurants;
-  final Position? userPosition;
+  final LocationService locationService;
 
   const CarouselSection({
     super.key,
     required this.restaurants,
-    this.userPosition,
+    required this.locationService,
   });
 
   @override
@@ -21,16 +22,13 @@ class CarouselSection extends StatelessWidget {
       items: restaurants.map((restaurant) {
         return RestaurantCard(
           restaurant: restaurant,
-          userPosition: userPosition,
+          locationService: locationService, // Passez le service
         );
       }).toList(),
       options: CarouselOptions(
         autoPlay: false,
-        autoPlayInterval: const Duration(seconds: 3),
-        autoPlayAnimationDuration: const Duration(milliseconds: 800),
         viewportFraction: 0.7,
         aspectRatio: 1.3,
-        enableInfiniteScroll: true,
       ),
     );
   }

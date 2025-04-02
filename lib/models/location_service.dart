@@ -6,7 +6,6 @@ class LocationService {
   bool _isLoading = false;
   String? _error;
 
-  // Coordonnées exactes pour Orléans (Hôtel de Ville)
   static const double _defaultLatitude = 47.902964;
   static const double _defaultLongitude = 1.909251;
 
@@ -67,15 +66,22 @@ class LocationService {
     );
   }
 
+  bool get hasValidPosition {
+    return _userPosition != null &&
+        !isUsingDefaultLocation() &&
+        _userPosition!.latitude != 0 &&
+        _userPosition!.longitude != 0;
+  }
+
   double? calculateDistanceTo(double latitude, double longitude) {
-    if (_userPosition == null) return null;
+    if (!hasValidPosition) return null;
 
     return Geolocator.distanceBetween(
       _userPosition!.latitude,
       _userPosition!.longitude,
       latitude,
       longitude,
-    ) / 1000; // Distance en kilomètres
+    ) / 1000;
   }
 
   bool isUsingDefaultLocation() {
