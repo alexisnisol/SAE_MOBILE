@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../database_helper.dart';
-import '../restaurant.dart';
+import '../../models/database/database_helper.dart';
+import '../../models/restaurant.dart';
 import 'package:geolocator/geolocator.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -19,8 +19,8 @@ class RestaurantCard extends StatelessWidget {
     return Geolocator.distanceBetween(
       userPosition!.latitude,
       userPosition!.longitude,
-      restaurant.latitude,
-      restaurant.longitude,
+      restaurant.latitude as double,
+      restaurant.longitude as double,
     ) / 1000;
   }
 

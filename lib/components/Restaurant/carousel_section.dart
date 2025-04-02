@@ -1,6 +1,6 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import '../restaurant.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import '../../models/restaurant.dart';
 import 'card_restaurant.dart';
 import 'package:geolocator/geolocator.dart';
 

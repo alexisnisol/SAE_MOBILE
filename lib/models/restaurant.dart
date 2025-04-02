@@ -29,8 +29,8 @@ class Restaurant {
   final int code_departement;
   final String commune;
   final int code_commune;
-  final double latitude;
-  final double longitude;
+  final int latitude;
+  final int longitude;
 
   Restaurant({
     required this.id_restaurant,
@@ -97,8 +97,8 @@ class Restaurant {
       code_departement: _parseInt(restaurant['code_departement']),
       commune: restaurant['commune'] ?? '',
       code_commune: _parseInt(restaurant['code_commune']),
-      latitude: _parseDouble(restaurant['latitude']),
-      longitude: _parseDouble(restaurant['longitude']),
+      latitude: _parseInt(restaurant['latitude']),
+      longitude: _parseInt(restaurant['longitude']),
     );
   }
 
@@ -113,12 +113,5 @@ class Restaurant {
     if (value is int) return value;
     if (value is String) return int.tryParse(value) ?? 0;
     return 0;
-  }
-
-  static double _parseDouble(dynamic value) {
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0.0;
-    return 0.0;
   }
 }

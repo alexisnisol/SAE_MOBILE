@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../components/database_helper.dart';
-import '../components/restaurant.dart';
-import '../components/sqlite_database.dart';
-import 'restaurant_detail_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../models/database/database_helper.dart';
+import '../models/restaurant.dart';
+import '../models/database/sqlite_database.dart';
 
 class CarteScreen extends StatefulWidget {
   @override
@@ -28,7 +28,9 @@ class _CartePageState extends State<CarteScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erreur de chargement : ' + snapshot.error.toString()));
+            return Center(
+                child: Text('Erreur de chargement : ' +
+                    snapshot.error.toString()));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('Aucun restaurant trouvé'));
           }
@@ -41,13 +43,8 @@ class _CartePageState extends State<CarteScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: InkWell(
                   onTap: () {
-                    // Navigation vers la page de détail
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RestaurantDetailPage(restaurant: restaurant),
-                      ),
-                    );
+                    // Navigation vers la page de détail via GoRouter
+                    context.go('/restaurant/${restaurant.id_restaurant}');
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -56,7 +53,8 @@ class _CartePageState extends State<CarteScreen> {
                         FutureBuilder<String>(
                           future: DatabaseHelper.imageLink(restaurant.name),
                           builder: (context, imageSnapshot) {
-                            final imageUrl = imageSnapshot.data ?? DatabaseHelper.DEFAULT_IMAGE;
+                            final imageUrl = imageSnapshot.data ??
+                                DatabaseHelper.DEFAULT_IMAGE;
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
@@ -76,7 +74,8 @@ class _CartePageState extends State<CarteScreen> {
                             children: [
                               Text(
                                 restaurant.name,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               SizedBox(height: 4),
                               Text(restaurant.commune),
@@ -96,4 +95,3 @@ class _CartePageState extends State<CarteScreen> {
     );
   }
 }
-
