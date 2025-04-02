@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/widgets/home.dart';
 import 'package:sae_mobile/widgets/carte_screen.dart';
 import 'package:sae_mobile/widgets/avis.dart';
-import 'package:sae_mobile/widgets/homeBody.dart';
+import 'package:sae_mobile/widgets/home_body.dart';
 import 'package:sae_mobile/widgets/restaurant_detail_screen.dart';
 import '../models/database/database_helper.dart';
 import '../widgets/favoris.dart';
@@ -19,7 +19,7 @@ final GoRouter router = GoRouter(
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => HomeBody(),
+          builder: (context, state) => HomeBodyScreen(),
         ),
         GoRoute(
           path: '/favoris',
