@@ -4,10 +4,11 @@ import 'package:sae_mobile/models/review.dart';
 import '../models/restaurant.dart';
 import '../models/database/database_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../models/auth_helper.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final int restaurantId;
-  static int? CURRENT_USER_ID = 1;
+  static String? CURRENT_USER_ID = AuthHelper.getCurrentUser()!.userMetadata?['sub'];
 
   const RestaurantDetailPage({Key? key, required this.restaurantId})
       : super(key: key);

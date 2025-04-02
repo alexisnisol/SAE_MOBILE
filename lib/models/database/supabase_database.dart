@@ -51,7 +51,7 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
-  Future<List<Review>> getReviews(id) async {
+  Future<List<Review>> getReviews(String id) async {
     final List<dynamic> response = await _supabase.from('AVIS').select().eq(
         'id_utilisateur', id);
     List<Review> reviews = response.map((data) {
@@ -84,7 +84,7 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
-  Future<void> addReview(int userId, int restauId, String avis, int etoiles,
+  Future<void> addReview(String userId, int restauId, String avis, int etoiles,
       DateTime date) async {
     int idAvis = await idMaxAvis();
     idAvis++;
@@ -135,7 +135,7 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
-  Future<bool> estCuisineLike(int userId, int cuisineId) async {
+  Future<bool> estCuisineLike(String userId, int cuisineId) async {
     final response = await _supabase.from("CUISINE_AIME").select().eq(
         "id_utilisateur", userId).eq("id_cuisine", cuisineId);
 
@@ -146,14 +146,14 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
-  Future<void> dislikeCuisine(int userId, int cuisineId) async {
+  Future<void> dislikeCuisine(String userId, int cuisineId) async {
     await _supabase.from("CUISINE_AIME").delete()
         .eq("id_utilisateur", userId)
         .eq("id_cuisine", cuisineId);
   }
 
   @override
-  Future<void> likeCuisine(int userId, int cuisineId) async {
+  Future<void> likeCuisine(String userId, int cuisineId) async {
     print("Début de likeCuisine");
     try {
       final response = await _supabase
@@ -170,7 +170,7 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
-  Future<List<int>> getRestaurantFavoris(int userId) async {
+  Future<List<int>> getRestaurantFavoris(String userId) async {
     final response = await _supabase
         .from('RESTAURANT_AIME')
         .select()
@@ -182,17 +182,18 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
-  Future<void> deleteRestaurantFavoris(int userId, int restauId) {
+  Future<void> deleteRestaurantFavoris(String userId, int restauId) {
     return _supabase.from('RESTAURANT_AIME').delete().eq('id_utilisateur', userId).eq('id_restaurant', restauId);
   }
 
   @override
-  Future<void> addRestaurantFavoris(int userId, int restauId) {
+  Future<void> addRestaurantFavoris(String userId, int restauId) {
+    print("Ajout du restaurant $restauId aux favoris de l'utilisateur $userId");
     return _supabase.from('RESTAURANT_AIME').insert({'id_utilisateur': userId, 'id_restaurant': restauId});
   }
 
   @override
-  Future<bool> isRestaurantFavorited(int userId, int restaurantId) async {
+  Future<bool> isRestaurantFavorited(String userId, int restaurantId) async {
     final response = await _supabase.from('RESTAURANT_AIME').select().eq('id_utilisateur', userId).eq('id_restaurant', restaurantId);
     return response.isNotEmpty;
   }
