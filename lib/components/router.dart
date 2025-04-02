@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/widgets/home.dart';
 import 'package:sae_mobile/widgets/carte_screen.dart';
 import 'package:sae_mobile/widgets/avis.dart';
+import 'package:sae_mobile/widgets/restaurant_detail_screen.dart';
+import '../models/database/database_helper.dart';
+import '../widgets/favoris.dart';
 
 
 final GoRouter router = GoRouter(
@@ -19,7 +22,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/favoris',
-          builder: (context, state) => const Center(child: Text('Favoris')),
+          builder: (context, state) => Center( child: GroupedFavorisPage()),
         ),
         GoRoute(
           path: '/carte',
@@ -32,6 +35,26 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/profil',
           builder: (context, state) => const Center(child: Text('Profil')),
+        ),
+        GoRoute(
+          path: '/restaurant/:id',
+          builder: (context, state) {
+            final id = int.tryParse(state.pathParameters['id'] ?? '');
+            if (id == null) {
+              return const Center(child: Text('ID de restaurant invalide.'));
+            }
+            return FutureBuilder(
+              future: DatabaseHelper.getRestaurantById(id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (!snapshot.hasData || snapshot.data == null) {
+                  return const Center(child: Text('Restaurant introuvable.'));
+                }
+                return RestaurantDetailPage(restaurantId: id);
+              },
+            );
+          },
         ),
       ],
     ),
