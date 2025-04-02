@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class HomeBody extends StatelessWidget {
-  const HomeBody({super.key});
+import '../components/Restaurant/build_carousel.dart';
+
+class HomeBodyScreen extends StatelessWidget {
+  const HomeBodyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
