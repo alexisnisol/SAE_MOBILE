@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/models/review.dart';
-import '../models/restaurant.dart';
-import '../models/database/database_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/auth_helper.dart';
+
+import '../models/database/database_helper.dart';
+import '../models/helper/auth_helper.dart';
+import '../models/restaurant.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final int restaurantId;

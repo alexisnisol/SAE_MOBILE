@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/models/review.dart';
 import '../models/database/database_helper.dart';
 import '../models/restaurant.dart';
-import '../models/auth_helper.dart';
+import '../models/helper/auth_helper.dart';
 
 
 class AvisPage extends StatefulWidget {
