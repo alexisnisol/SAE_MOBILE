@@ -29,7 +29,7 @@ class AuthHelper {
     }
   }
 
-  static User? getCurrentUser() {
+  static User getCurrentUser() {
     return _auth.currentUser;
   }
 

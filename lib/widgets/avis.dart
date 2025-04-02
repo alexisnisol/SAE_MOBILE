@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/models/review.dart';
 import '../models/database/database_helper.dart';
 import '../models/restaurant.dart';
+import '../models/auth_helper.dart';
+
 
 class AvisPage extends StatefulWidget {
   const AvisPage({super.key});
@@ -22,13 +24,13 @@ class _AvisPageState extends State<AvisPage> {
 
   void _loadReviews() {
     setState(() {
-      futureReviews = DatabaseHelper.getReviews(1);
+      futureReviews = DatabaseHelper.getReviews(AuthHelper.getCurrentUser().id);
     });
   }
 
   Future<void> _deleteReview(int id) async {
     await DatabaseHelper.deleteReview(id);
-    _loadReviews(); // Recharge la liste après suppression
+    _loadReviews();
   }
 
   Widget _buildStarRating(int rating) {

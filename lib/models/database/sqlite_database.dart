@@ -41,7 +41,7 @@ class SQLiteDatabase implements IDatabase {
   }
 
   @override
-  Future<List<Review>> getReviews(int id) async {
+  Future<List<Review>> getReviews(String id) async {
     final List<Map<String, dynamic>> maps = await _database!.query('AVIS', where: 'id_restaurant= ?', whereArgs: [id]);
     return maps.map((map) => Review.fromJson(map)).toList();
   }
@@ -67,25 +67,25 @@ class SQLiteDatabase implements IDatabase {
   }
 
   @override
-  Future<bool> estCuisineLike(int userId, int cuisineId) {
+  Future<bool> estCuisineLike(String userId, int cuisineId) {
     // TODO: implement estCuisineLike
     throw UnimplementedError();
   }
 
   @override
-  Future<void> dislikeCuisine(int userId, int cuisineId) {
+  Future<void> dislikeCuisine(String userId, int cuisineId) {
     // TODO: implement dislikeCuisine
     throw UnimplementedError();
   }
 
   @override
-  Future<void> likeCuisine(int userId, int cuisineId) {
+  Future<void> likeCuisine(String userId, int cuisineId) {
     // TODO: implement likeCuisine
     throw UnimplementedError();
   }
 
   @override
-  Future<void> addReview(int userId, int restauId, String avis, int etoiles, DateTime date) {
+  Future<void> addReview(String userId, int restauId, String avis, int etoiles, DateTime date) {
     // TODO: implement addReview
     throw UnimplementedError();
   }
@@ -97,25 +97,25 @@ class SQLiteDatabase implements IDatabase {
   }
 
   @override
-  Future<List<int>> getRestaurantFavoris(int userId) {
+  Future<List<int>> getRestaurantFavoris(String userId) {
     // TODO: implement getRestaurantFavoris
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteRestaurantFavoris(int userId, int restauId) {
+  Future<void> deleteRestaurantFavoris(String userId, int restauId) {
     // TODO: implement deleteRestaurantFavoris
     throw UnimplementedError();
   }
 
   @override
-  Future<void> addRestaurantFavoris(int userId, int restauId) {
+  Future<void> addRestaurantFavoris(String userId, int restauId) {
     // TODO: implement addRestaurantFavoris
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> isRestaurantFavorited(int userId, int restauId) {
+  Future<bool> isRestaurantFavorited(String userId, int restauId) {
     // TODO: implement isRestaurantFavorited
     throw UnimplementedError();
   }
