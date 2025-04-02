@@ -30,6 +30,11 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
+  GoTrueClient getAuth() {
+    return _supabase.auth;
+  }
+
+  @override
   Future<List<Restaurant>> getRestaurants() async {
     if (!_isInitialized) await initialize();
 

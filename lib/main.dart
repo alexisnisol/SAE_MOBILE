@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sae_mobile/widgets/home.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'components/router.dart';
 import 'models/database/database_helper.dart';
-import 'package:sae_mobile/components/router.dart';
 
 Future<void> main() async {
 
