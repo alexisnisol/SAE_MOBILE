@@ -74,6 +74,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                context.go('/carte');
+              },
+            ),
             title: Text(restaurant.name),
             actions: [
               IconButton(
