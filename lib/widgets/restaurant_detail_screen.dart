@@ -329,9 +329,14 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ),
                         ),
                         SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: _submitReview,
-                          child: Text("Envoyer l'avis"),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end, // Aligner à droite
+                          children: [
+                            ElevatedButton(
+                              onPressed: _submitReview,
+                              child: Text("Envoyer l'avis"),
+                            ),
+                          ],
                         ),
                       ] else
                         Center(
