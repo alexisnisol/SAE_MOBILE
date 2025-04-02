@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:sae_mobile/components/review.dart';
 import 'package:sae_mobile/models/restaurant.dart';
 import 'package:sae_mobile/models/database/database_helper.dart';
 import 'package:sae_mobile/models/database/i_database.dart';
