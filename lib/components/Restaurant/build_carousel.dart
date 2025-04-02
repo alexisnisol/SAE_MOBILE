@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/database/database_helper.dart';
 import '../../models/restaurant.dart';
-import 'location_service.dart';
+import '../../models/location_service.dart';
 import 'title_section.dart';
 import 'carousel_section.dart';
 
