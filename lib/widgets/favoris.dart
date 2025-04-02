@@ -24,7 +24,7 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
   /// puis pour chaque id, elle récupère les détails du restaurant et son type de cuisine.
   /// Les restaurants sont ensuite regroupés par type de cuisine.
   Future<Map<String, List<Restaurant>>> _loadGroupedFavoris() async {
-    List<int> favoriteIds = await DatabaseHelper.getRestaurantFavoris(AuthHelper.getCurrentUser()!.userMetadata?['sub']);
+    List<int> favoriteIds = await DatabaseHelper.getRestaurantFavoris(AuthHelper.getCurrentUser().id);
     Map<String, List<Restaurant>> groupedFavoris = {};
 
     for (int restaurantId in favoriteIds) {
@@ -45,7 +45,7 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
 
   Future<void> _deleteFavorite(int restaurantId) async {
 
-    await DatabaseHelper.deleteRestaurantFavoris(AuthHelper.getCurrentUser()!.userMetadata?['sub'], restaurantId);
+    await DatabaseHelper.deleteRestaurantFavoris(AuthHelper.getCurrentUser().id, restaurantId);
     setState(() {
       futureGroupedFavoris = _loadGroupedFavoris();
     });

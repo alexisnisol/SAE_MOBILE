@@ -24,9 +24,7 @@ class _AvisPageState extends State<AvisPage> {
 
   void _loadReviews() {
     setState(() {
-      futureReviews = DatabaseHelper.getReviews(AuthHelper.getCurrentUser()!.userMetadata?['sub']);
-
-      print(AuthHelper.getCurrentUser()!.userMetadata?['sub']);
+      futureReviews = DatabaseHelper.getReviews(AuthHelper.getCurrentUser().id);
     });
   }
 

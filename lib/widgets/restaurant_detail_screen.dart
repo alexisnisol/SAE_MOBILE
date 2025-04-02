@@ -8,7 +8,7 @@ import '../models/auth_helper.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final int restaurantId;
-  static String? CURRENT_USER_ID = AuthHelper.getCurrentUser()!.userMetadata?['sub'];
+  static String? CURRENT_USER_ID = AuthHelper.getCurrentUser().id;
 
   const RestaurantDetailPage({Key? key, required this.restaurantId})
       : super(key: key);
