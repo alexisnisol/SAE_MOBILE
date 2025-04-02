@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:sae_mobile/components/review.dart';
+import 'package:sae_mobile/models/database/database_helper.dart';
+import 'package:sae_mobile/models/database/i_database.dart';
+import 'package:sae_mobile/models/restaurant.dart';
 import 'package:sae_mobile/models/review.dart';
 import 'package:sae_mobile/widgets/avis.dart';
-import 'package:sae_mobile/components/database_helper.dart';
 import 'mock.mocks.dart';
-import 'package:sae_mobile/components/restaurant.dart';
+
 
 void main() {
   late MockIDatabase mockDatabase;
@@ -93,7 +94,7 @@ void main() {
     });
 
     // Définir la base de données mockée
-    DatabaseHelper.setDatabase(mockDatabase);
+    DatabaseHelper.setDatabase(mockDatabase as IDatabase);
   });
 
   testWidgets('Affichage et suppression des avis', (WidgetTester tester) async {
