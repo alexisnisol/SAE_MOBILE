@@ -7,6 +7,7 @@ abstract class IDatabase {
   Future<void> initialize();
   Future<List<Restaurant>> getRestaurants();
   dynamic getAuth();
+  dynamic getStorage();
   Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(int id);
   Future<List<Review>> getReviews(String id);
   Future<List<Review>> getReviewsRestau(int restauId);
