@@ -29,6 +29,11 @@ class SQLiteDatabase implements IDatabase {
   }
 
   @override
+  dynamic getAuth() {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<List<Restaurant>> getRestaurants() async {
     if (_database == null) await initialize();
     final List<Map<String, dynamic>> maps = await _database!.query('RESTAURANT');

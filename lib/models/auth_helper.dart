@@ -1,6 +1,5 @@
-
-import 'package:sae_mobile/components/database_helper.dart';
 import 'package:supabase/supabase.dart';
+import 'database/database_helper.dart';
 
 class AuthHelper {
 
