@@ -188,18 +188,36 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<void> deleteRestaurantFavoris(String userId, int restauId) {
-    return _supabase.from('RESTAURANT_AIME').delete().eq('id_utilisateur', userId).eq('id_restaurant', restauId);
+    return _supabase.from('RESTAURANT_AIME').delete().eq(
+        'id_utilisateur', userId).eq('id_restaurant', restauId);
   }
 
   @override
   Future<void> addRestaurantFavoris(String userId, int restauId) {
     print("Ajout du restaurant $restauId aux favoris de l'utilisateur $userId");
-    return _supabase.from('RESTAURANT_AIME').insert({'id_utilisateur': userId, 'id_restaurant': restauId});
+    return _supabase.from('RESTAURANT_AIME').insert(
+        {'id_utilisateur': userId, 'id_restaurant': restauId});
   }
 
   @override
   Future<bool> isRestaurantFavorited(String userId, int restaurantId) async {
-    final response = await _supabase.from('RESTAURANT_AIME').select().eq('id_utilisateur', userId).eq('id_restaurant', restaurantId);
+    final response = await _supabase.from('RESTAURANT_AIME').select().eq(
+        'id_utilisateur', userId).eq('id_restaurant', restaurantId);
     return response.isNotEmpty;
+  }
+
+  @override
+  Future<void> addReviewWithImage(String userId, int restaurantId, String avis, int etoiles, DateTime date, String? imageUrl) async {
+    int idAvis = await idMaxAvis();
+    idAvis++;
+    await _supabase.from("AVIS").insert({
+      "id_avis": idAvis,
+      "id_utilisateur": userId,
+      "id_restaurant": restaurantId,
+      "etoile": etoiles,
+      "avis": avis,
+      "date_avis": date.toIso8601String(),
+      "image_url": imageUrl
+    });
   }
 }

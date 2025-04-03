@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/models/review.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../models/database/database_helper.dart';
-import '../models/helper/auth_helper.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/restaurant.dart';
+import '../models/database/database_helper.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/helper/auth_helper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import '../models/helper/storage_helper.dart';
+import 'package:path/path.dart' as path;
 
 class RestaurantDetailPage extends StatefulWidget {
   final int restaurantId;
@@ -22,11 +27,28 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   final TextEditingController _avisController = TextEditingController();
   int _selectedRating = 3;
   bool _isFavorited = false;
+  File? _reviewImage;
+  final ImagePicker _picker = ImagePicker();
+  bool _isUploading = false;
+
+  // Nom du bucket Supabase où stocker les images
+  final String _bucketName = 'review_photos';
 
   @override
   void initState() {
     super.initState();
     _checkIfFavorited();
+    _ensureBucketExists();
+  }
+
+  // S'assure que le bucket existe
+  Future<void> _ensureBucketExists() async {
+    try {
+      await StorageHelper.createBucket(_bucketName);
+    } catch (e) {
+      // Le bucket existe probablement déjà, aucune action requise
+      print("Bucket exists or error: $e");
+    }
   }
 
   // Vérifie si le restaurant est déjà favorisé pour l'utilisateur courant.
@@ -52,6 +74,96 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
           RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId);
     }
     _checkIfFavorited();
+  }
+
+  // Prendre une photo avec la caméra
+  Future<void> _takePhoto() async {
+    final XFile? photo = await _picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 80, // Réduire la qualité pour optimiser la taille
+    );
+    if (photo != null) {
+      setState(() {
+        _reviewImage = File(photo.path);
+      });
+    }
+  }
+
+  // Choisir une photo depuis la galerie
+  Future<void> _pickPhoto() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80, // Réduire la qualité pour optimiser la taille
+    );
+    if (image != null) {
+      setState(() {
+        _reviewImage = File(image.path);
+      });
+    }
+  }
+
+  // Télécharger l'image sur Supabase
+  Future<String?> _uploadImage(File imageFile) async {
+    try {
+      final userId = RestaurantDetailPage.CURRENT_USER_ID;
+      if (userId == null) return null;
+
+      // Générer un nom de fichier unique
+      final extension = path.extension(imageFile.path);
+      final fileName = 'review_${userId}_${widget.restaurantId}_${DateTime.now().millisecondsSinceEpoch}$extension';
+
+      // Options pour le fichier (publique et remplacer si existe)
+      final fileOptions = FileOptions(
+        upsert: true, // Remplacer si existe
+        contentType: 'image/jpeg', // Ajuster selon le type réel
+      );
+
+      // Télécharger le fichier
+      final filePath = await StorageHelper.uploadFile(
+        _bucketName,
+        imageFile,
+        fileName,
+        fileOptions,
+      );
+
+      // Obtenir l'URL publique
+      final publicUrl = await StorageHelper.getPublicUrl(_bucketName, fileName);
+      return publicUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors du téléchargement de l'image")),
+      );
+      return null;
+    }
+  }
+
+  // Afficher les options de capture/sélection de photo
+  void _showPhotoOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.camera_alt),
+            title: Text('Prendre une photo'),
+            onTap: () {
+              Navigator.pop(context);
+              _takePhoto();
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text('Choisir depuis la galerie'),
+            onTap: () {
+              Navigator.pop(context);
+              _pickPhoto();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -198,7 +310,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                                             label: GestureDetector(
                                               onTap: () async {
                                                 bool newLikeStatus = !isLiked;
-                                                 DatabaseHelper.toggleCuisineLike(
+                                                DatabaseHelper.toggleCuisineLike(
                                                     RestaurantDetailPage
                                                         .CURRENT_USER_ID!,
                                                     cuisine["id"],
@@ -329,9 +441,62 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ),
                         ),
                         SizedBox(height: 8),
+                        // Nouvelle section pour la photo
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _reviewImage == null
+                                  ? OutlinedButton.icon(
+                                icon: Icon(Icons.camera_alt),
+                                label: Text("Ajouter une photo"),
+                                onPressed: _showPhotoOptions,
+                              )
+                                  : Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Container(
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      image: DecorationImage(
+                                        image: FileImage(_reviewImage!),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.cancel, color: Colors.red),
+                                    onPressed: () {
+                                      setState(() {
+                                        _reviewImage = null;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
                         ElevatedButton(
-                          onPressed: _submitReview,
-                          child: Text("Envoyer l'avis"),
+                          onPressed: _isUploading ? null : _submitReview,
+                          child: _isUploading
+                              ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Text("Envoi en cours..."),
+                            ],
+                          )
+                              : Text("Envoyer l'avis"),
                         ),
                       ] else
                         Center(
@@ -415,6 +580,62 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                                     ),
                                     SizedBox(height: 4),
                                     Text(avis.avis),
+                                    // Afficher l'image de l'avis si elle existe
+                                    if (avis.imageUrl != null && avis.imageUrl!.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8.0),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // Ouvrir l'image en plein écran
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => Scaffold(
+                                                  appBar: AppBar(
+                                                    title: Text('Photo de l\'avis'),
+                                                  ),
+                                                  body: Center(
+                                                    child: InteractiveViewer(
+                                                      panEnabled: true,
+                                                      boundaryMargin: EdgeInsets.all(20),
+                                                      minScale: 0.5,
+                                                      maxScale: 4,
+                                                      child: Image.network(
+                                                        avis.imageUrl!,
+                                                        fit: BoxFit.contain,
+                                                        loadingBuilder: (context, child, loadingProgress) {
+                                                          if (loadingProgress == null) return child;
+                                                          return Center(
+                                                            child: CircularProgressIndicator(
+                                                              value: loadingProgress.expectedTotalBytes != null
+                                                                  ? loadingProgress.cumulativeBytesLoaded /
+                                                                  loadingProgress.expectedTotalBytes!
+                                                                  : null,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Hero(
+                                            tag: 'review_image_${avis.id}',
+                                            child: Container(
+                                              height: 120,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(8),
+                                                image: DecorationImage(
+                                                  image: NetworkImage(avis.imageUrl!),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                               );
@@ -508,26 +729,52 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     );
   }
 
-  void _submitReview() async {
+  Future<void> _submitReview() async {
     if (_avisController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Veuillez écrire un avis avant d'envoyer.")),
       );
       return;
     }
-    await DatabaseHelper.addReview(
-      RestaurantDetailPage.CURRENT_USER_ID!,
-      widget.restaurantId,
-      _avisController.text,
-      _selectedRating,
-      DateTime.now(),
-    );
-    _avisController.clear();
+
     setState(() {
-      _selectedRating = 3;
+      _isUploading = true;
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Avis ajouté avec succès !")),
-    );
+
+    try {
+      String? imageUrl;
+      if (_reviewImage != null) {
+        // Télécharger l'image sur Supabase
+        imageUrl = await _uploadImage(_reviewImage!);
+      }
+
+      // Ajouter l'avis avec l'URL de l'image à la base de données
+      await DatabaseHelper.addReviewWithImage(
+        RestaurantDetailPage.CURRENT_USER_ID!,
+        widget.restaurantId,
+        _avisController.text,
+        _selectedRating,
+        DateTime.now(),
+        imageUrl,
+      );
+
+      _avisController.clear();
+      setState(() {
+        _selectedRating = 3;
+        _reviewImage = null;
+        _isUploading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Avis ajouté avec succès !")),
+      );
+    } catch (e) {
+      setState(() {
+        _isUploading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors de l'envoi de l'avis: $e")),
+      );
+    }
   }
 }

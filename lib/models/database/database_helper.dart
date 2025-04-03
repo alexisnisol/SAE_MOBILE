@@ -127,4 +127,9 @@ class DatabaseHelper {
   static isRestaurantFavorited(String i, int restaurantId) {
     return _database!.getRestaurantFavoris(i).then((value) => value.contains(restaurantId));
   }
+
+  static Future<void> addReviewWithImage(String userId, int restaurantId, String avis, int etoiles, DateTime date, String? imageUrl) async {
+    await _database!.addReviewWithImage(userId, restaurantId, avis, etoiles, date, imageUrl);
+  }
+
 }
