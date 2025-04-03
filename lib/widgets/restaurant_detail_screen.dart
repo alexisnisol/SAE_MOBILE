@@ -32,7 +32,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   bool _isUploading = false;
 
   // Nom du bucket Supabase où stocker les images
-  final String _bucketName = 'review_photos';
+  final String _bucketName = 'reviewphotos';
 
   @override
   void initState() {
@@ -118,10 +118,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         contentType: 'image/jpeg', // Ajuster selon le type réel
       );
 
-      // Télécharger le fichier
+      // Télécharger le
+      final file = File(imageFile.path);
       final filePath = await StorageHelper.uploadFile(
         _bucketName,
-        imageFile,
+        file,
         fileName,
         fileOptions,
       );
