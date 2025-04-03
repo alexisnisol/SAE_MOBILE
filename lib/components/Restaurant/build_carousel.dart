@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
 import '../../models/database/database_helper.dart';
 import '../../models/restaurant.dart';
 import '../../models/location_service.dart';
+import '../../models/viewmodels/settings_viewmodel.dart';
 import 'title_section.dart';
 import 'carousel_section.dart';
 
@@ -22,11 +24,11 @@ class _RestaurantCarouselState extends State<RestaurantCarousel> {
   void initState() {
     super.initState();
     _restaurantsFuture = DatabaseHelper.getRestaurants();
-    _locationFuture = _locationService.getUserLocation();
   }
 
   @override
   Widget build(BuildContext context) {
+    _locationFuture = _locationService.getUserLocation(context.watch<SettingsViewModel>().isGeolocationDisabled);
     return FutureBuilder(
       future: Future.wait([_restaurantsFuture, _locationFuture]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {

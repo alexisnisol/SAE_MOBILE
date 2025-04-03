@@ -5,6 +5,7 @@ import 'package:sae_mobile/widgets/auth/login.dart';
 import 'package:sae_mobile/widgets/avis.dart';
 import 'package:sae_mobile/widgets/home_body.dart';
 import 'package:sae_mobile/widgets/profil/edit_profil_screen.dart';
+import 'package:sae_mobile/widgets/profil/preferences_screen.dart';
 import 'package:sae_mobile/widgets/profil/profil_screen.dart';
 import 'package:sae_mobile/widgets/restaurant_detail_screen.dart';
 import '../models/database/database_helper.dart';
@@ -86,6 +87,17 @@ final GoRouter router = GoRouter(
             return null;
           },
         ),
+        GoRoute(
+          path: '/preferences',
+          builder: (context, state) => PreferencesScreen(),
+          redirect: (context, state) {
+            if (!AuthHelper.isSignedIn()) {
+              return '/login';
+            }
+            return null;
+          },
+        ),
+
         GoRoute(
           path: '/restaurant/:id',
           builder: (context, state) {
