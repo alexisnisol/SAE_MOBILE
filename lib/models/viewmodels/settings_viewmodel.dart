@@ -20,7 +20,14 @@ class SettingsViewModel extends ChangeNotifier {
     getSettings();
   }
 
-  void getSettings() async {
+  /*
+   * Permet de changer le repository utilisé par le ViewModel pour les tests
+   */
+  void setRepository(SettingsRepository settingsRepository) {
+    _settingsRepository = settingsRepository;
+  }
+
+  Future<void> getSettings() async {
     _isDark = await _settingsRepository.getSettingsTheme();
     _isGeolocationDisabled = await _settingsRepository.getSettingsGeolocation();
     notifyListeners();
