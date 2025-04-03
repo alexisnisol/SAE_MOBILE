@@ -1,4 +1,3 @@
-import 'dart:html' as html;
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -18,50 +17,73 @@ class EditProfilScreen extends StatefulWidget {
 
 class _EditProfilScreenState extends State<EditProfilScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  File? _selectedImage;
-  html.File? _webImage;
+  File? _selectedImageFile;
+  Uint8List? _selectedImageBytes;
+  bool _isImageLoading = false;
+
 
   Future<void> _pickImage() async {
-    if (kIsWeb) {
-      final input = html.FileUploadInputElement()
-        ..accept = 'image/*';
-      input.click();
-      input.onChange.listen((event) {
-        if (input.files!.isNotEmpty) {
-          setState(() {
-            _webImage = input.files!.first;
-          });
-        }
-      });
-    } else {
+    setState(() {
+      _isImageLoading = true;
+    });
+
+    try {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
       if (pickedFile != null) {
-        setState(() {
-          _selectedImage = File(pickedFile.path);
-        });
+        if (kIsWeb) {
+          // Sur Web, on lit directement les bytes
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            _selectedImageBytes = bytes;
+            _selectedImageFile = null;
+          });
+        } else {
+          // Sur mobile, on garde le File
+          setState(() {
+            _selectedImageFile = File(pickedFile.path);
+            _selectedImageBytes = null;
+          });
+        }
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors de la sélection de l'image: $e")),
+      );
+    } finally {
+      setState(() {
+        _isImageLoading = false;
+      });
     }
   }
 
   Future<String?> _uploadImage(String userId) async {
     try {
+      if (_selectedImageFile == null && _selectedImageBytes == null) {
+        return null;
+      }
+
       final fileName = '$userId.jpg';
-      final List<int> bytes;
-      if (kIsWeb && _webImage != null) {
-        final reader = html.FileReader();
-        reader.readAsArrayBuffer(_webImage!);
-        await reader.onLoad.first;
-        bytes = reader.result as List<int>;
-      } else if (_selectedImage != null) {
-        bytes = await _selectedImage!.readAsBytes();
+      List<int> bytes;
+
+      if (kIsWeb && _selectedImageBytes != null) {
+        bytes = _selectedImageBytes!;
+      } else if (_selectedImageFile != null) {
+        bytes = await _selectedImageFile!.readAsBytes();
       } else {
         return null;
       }
-      var resp = await StorageHelper.uploadBinary("avatars", fileName, bytes, fileOptions: const FileOptions(upsert: true));
+
+      var resp = await StorageHelper.uploadBinary(
+          "avatars",
+          fileName,
+          bytes,
+          fileOptions: const FileOptions(upsert: true)
+      );
+
       resp = resp.substring(resp.indexOf('/') + 1);
       return resp;
-
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Erreur lors de l'upload: $error")),
@@ -94,26 +116,30 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                 child: FutureBuilder<String?>(
                   future: StorageHelper.getPublicUrl("avatars", user.userMetadata?['avatar_url']),
                   builder: (context, snapshot) {
+                    Widget child;
                     ImageProvider<Object>? imageProvider;
 
-                    if (_webImage != null) {
-                      imageProvider = null;
-                    } else if (_selectedImage != null) {
-                      imageProvider = FileImage(_selectedImage!);
+                    if (_isImageLoading) {
+                      child = const CircularProgressIndicator();
+                    } else if (_selectedImageBytes != null) {
+                      imageProvider = MemoryImage(_selectedImageBytes!);
+                      child = const SizedBox.shrink();
+                    } else if (_selectedImageFile != null) {
+                      imageProvider = FileImage(_selectedImageFile!);
+                      child = const SizedBox.shrink();
                     } else if (snapshot.connectionState == ConnectionState.waiting) {
-                      imageProvider = null;
+                      child = const Icon(Icons.camera_alt, size: 40);
                     } else if (snapshot.hasData && snapshot.data != null) {
                       imageProvider = NetworkImage(snapshot.data!);
+                      child = const SizedBox.shrink();
                     } else {
-                      imageProvider = null;
+                      child = const Icon(Icons.camera_alt, size: 40);
                     }
 
                     return CircleAvatar(
                       radius: 40,
                       backgroundImage: imageProvider,
-                      child: (_selectedImage == null && _webImage == null && snapshot.connectionState == ConnectionState.waiting)
-                          ? const Icon(Icons.camera_alt, size: 40)
-                          : null,
+                      child: child,
                     );
                   },
                 ),
