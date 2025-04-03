@@ -22,7 +22,9 @@ class AuthWelcomeText extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(10),
           child: Text(
-            isRegister ? "Inscrivez-vous maintenant" : "Connectez-vous maintenant",
+            isRegister
+                ? "Inscrivez-vous maintenant"
+                : "Connectez-vous maintenant",
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),

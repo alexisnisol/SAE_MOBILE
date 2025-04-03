@@ -14,15 +14,10 @@ class SQLiteDatabase implements IDatabase {
     }
     try {
       String path = join(await getDatabasesPath(), 'assets/database.db');
-      _database = await openDatabase(
-        path, 
-        version: 1, 
-        onCreate: (Database db, int version) async {
-          await db.execute(
-            'SELECT * FROM RESTAURANT'
-          );
-        }
-      );
+      _database = await openDatabase(path, version: 1,
+          onCreate: (Database db, int version) async {
+        await db.execute('SELECT * FROM RESTAURANT');
+      });
     } catch (e) {
       print(e);
     }
@@ -41,22 +36,27 @@ class SQLiteDatabase implements IDatabase {
   @override
   Future<List<Restaurant>> getRestaurants() async {
     if (_database == null) await initialize();
-    final List<Map<String, dynamic>> maps = await _database!.query('RESTAURANT');
+    final List<Map<String, dynamic>> maps =
+        await _database!.query('RESTAURANT');
     return maps.map((map) => Restaurant.fromMap(map)).toList();
   }
 
   @override
   Future<List<Review>> getReviews(String id) async {
-    final List<Map<String, dynamic>> maps = await _database!.query('AVIS', where: 'id_restaurant= ?', whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await _database!
+        .query('AVIS', where: 'id_restaurant= ?', whereArgs: [id]);
     return maps.map((map) => Review.fromJson(map)).toList();
   }
+
   @override
   Future<void> deleteReview(int id) {
     return _database!.delete('AVIS', where: 'id_avis = ?', whereArgs: [id]);
   }
+
   @override
   Future<Restaurant> getRestaurantById(int id) async {
-    final List<Map<String, dynamic>> maps = await _database!.query('RESTAURANT', where: 'id_restaurant = ?', whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await _database!
+        .query('RESTAURANT', where: 'id_restaurant = ?', whereArgs: [id]);
     return Restaurant.fromMap(maps.first);
   }
 
@@ -90,7 +90,8 @@ class SQLiteDatabase implements IDatabase {
   }
 
   @override
-  Future<void> addReview(String userId, int restauId, String avis, int etoiles, DateTime date) {
+  Future<void> addReview(
+      String userId, int restauId, String avis, int etoiles, DateTime date) {
     // TODO: implement addReview
     throw UnimplementedError();
   }
@@ -124,8 +125,4 @@ class SQLiteDatabase implements IDatabase {
     // TODO: implement isRestaurantFavorited
     throw UnimplementedError();
   }
-
-  
 }
-
-

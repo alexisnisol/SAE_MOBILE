@@ -3,7 +3,6 @@ import 'package:sae_mobile/models/review.dart';
 import '../restaurant.dart';
 
 abstract class IDatabase {
-
   Future<void> initialize();
   Future<List<Restaurant>> getRestaurants();
   dynamic getAuth();
@@ -12,7 +11,8 @@ abstract class IDatabase {
   Future<List<Review>> getReviews(String id);
   Future<List<Review>> getReviewsRestau(int restauId);
   Future<void> deleteReview(int id);
-  Future<void> addReview(String userId, int restauId, String avis, int etoiles, DateTime date);
+  Future<void> addReview(
+      String userId, int restauId, String avis, int etoiles, DateTime date);
   Future<Restaurant> getRestaurantById(int id);
   bool isConnected();
   Future<bool> estCuisineLike(String userId, int cuisineId);
@@ -22,6 +22,4 @@ abstract class IDatabase {
   Future<void> deleteRestaurantFavoris(String userId, int restauId);
   Future<void> addRestaurantFavoris(String userId, int restauId);
   Future<bool> isRestaurantFavorited(String userId, int restauId);
-
-
 }

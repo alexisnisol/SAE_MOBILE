@@ -9,7 +9,6 @@ import '../../components/auth/switch_auth_button.dart';
 import '../../components/form/input_text_style.dart';
 
 class LoginScreen extends StatefulWidget {
-
   const LoginScreen({super.key});
 
   @override
@@ -17,31 +16,27 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AuthWelcomeText(isRegister: false),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: LoginForm()
-                    ),
-                  ),
-                ),
-                AuthButton(isRegister: false),
-              ],
+        body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AuthWelcomeText(isRegister: false),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              elevation: 5,
+              child: Padding(
+                  padding: const EdgeInsets.all(16.0), child: LoginForm()),
             ),
-          )
-    );
+          ),
+          AuthButton(isRegister: false),
+        ],
+      ),
+    ));
   }
 }

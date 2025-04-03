@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../models/database/database_helper.dart';
 import '../models/restaurant.dart';
 import '../models/helper/auth_helper.dart';
+
 class GroupedFavorisPage extends StatefulWidget {
   const GroupedFavorisPage({super.key});
 
@@ -24,14 +25,19 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
   /// puis pour chaque id, elle récupère les détails du restaurant et son type de cuisine.
   /// Les restaurants sont ensuite regroupés par type de cuisine.
   Future<Map<String, List<Restaurant>>> _loadGroupedFavoris() async {
-    List<int> favoriteIds = await DatabaseHelper.getRestaurantFavoris(AuthHelper.getCurrentUser().id);
+    List<int> favoriteIds = await DatabaseHelper.getRestaurantFavoris(
+        AuthHelper.getCurrentUser().id);
     Map<String, List<Restaurant>> groupedFavoris = {};
 
     for (int restaurantId in favoriteIds) {
-      Restaurant restaurant = await DatabaseHelper.getRestaurantById(restaurantId);
+      Restaurant restaurant =
+          await DatabaseHelper.getRestaurantById(restaurantId);
 
-      List<Map<String, dynamic>> types = await DatabaseHelper.getTypeCuisineRestaurant(restaurant.id_restaurant);
-      String cuisineType = types.isNotEmpty ? types.first["cuisine"].toString() : "Autre";
+      List<Map<String, dynamic>> types =
+          await DatabaseHelper.getTypeCuisineRestaurant(
+              restaurant.id_restaurant);
+      String cuisineType =
+          types.isNotEmpty ? types.first["cuisine"].toString() : "Autre";
 
       if (groupedFavoris.containsKey(cuisineType)) {
         groupedFavoris[cuisineType]!.add(restaurant);
@@ -44,8 +50,8 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
   }
 
   Future<void> _deleteFavorite(int restaurantId) async {
-
-    await DatabaseHelper.deleteRestaurantFavoris(AuthHelper.getCurrentUser().id, restaurantId);
+    await DatabaseHelper.deleteRestaurantFavoris(
+        AuthHelper.getCurrentUser().id, restaurantId);
     setState(() {
       futureGroupedFavoris = _loadGroupedFavoris();
     });
@@ -83,7 +89,8 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 cuisineType,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ));
             // Pour chaque restaurant du groupe, on affiche une carte avec ses informations
@@ -91,16 +98,19 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
               sections.add(Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   leading: FutureBuilder<String>(
                     future: DatabaseHelper.imageLink(restaurant.name),
                     builder: (context, imageSnapshot) {
-                      if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                      if (imageSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return const SizedBox(
                             width: 50,
                             height: 50,
                             child: Center(child: CircularProgressIndicator()));
-                      } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
+                      } else if (imageSnapshot.hasError ||
+                          imageSnapshot.data == null) {
                         return Image.asset(
                           'assets/images/default_restaurant.png',
                           width: 50,

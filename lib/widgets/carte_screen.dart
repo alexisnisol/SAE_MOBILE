@@ -31,7 +31,7 @@ class _CartePageState extends State<CarteScreen> {
     setState(() {
       filteredRestaurants = allRestaurants
           .where((restaurant) =>
-          restaurant.name.toLowerCase().contains(query.toLowerCase()))
+              restaurant.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -53,60 +53,60 @@ class _CartePageState extends State<CarteScreen> {
       body: filteredRestaurants.isEmpty
           ? Center(child: Text('Aucun restaurant trouvé'))
           : ListView.builder(
-        itemCount: filteredRestaurants.length,
-        itemBuilder: (context, index) {
-          final restaurant = filteredRestaurants[index];
-          return Card(
-            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: InkWell(
-              onTap: () {
-                // Navigation vers la page de détail via GoRouter
-                context.go('/restaurant/${restaurant.id_restaurant}');
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    FutureBuilder<String>(
-                      future: DatabaseHelper.imageLink(restaurant.name),
-                      builder: (context, imageSnapshot) {
-                        final imageUrl = imageSnapshot.data ??
-                            DatabaseHelper.DEFAULT_IMAGE;
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            imageUrl,
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              itemCount: filteredRestaurants.length,
+              itemBuilder: (context, index) {
+                final restaurant = filteredRestaurants[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: InkWell(
+                    onTap: () {
+                      // Navigation vers la page de détail via GoRouter
+                      context.go('/restaurant/${restaurant.id_restaurant}');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
                         children: [
-                          Text(
-                            restaurant.name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16),
+                          FutureBuilder<String>(
+                            future: DatabaseHelper.imageLink(restaurant.name),
+                            builder: (context, imageSnapshot) {
+                              final imageUrl = imageSnapshot.data ??
+                                  DatabaseHelper.DEFAULT_IMAGE;
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  imageUrl,
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
                           ),
-                          SizedBox(height: 4),
-                          Text(restaurant.commune),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  restaurant.name,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                                SizedBox(height: 4),
+                                Text(restaurant.commune),
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.arrow_forward_ios, size: 16),
                         ],
                       ),
                     ),
-                    Icon(Icons.arrow_forward_ios, size: 16),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

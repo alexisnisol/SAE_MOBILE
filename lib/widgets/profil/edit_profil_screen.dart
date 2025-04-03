@@ -10,7 +10,6 @@ import 'package:sae_mobile/models/helper/storage_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditProfilScreen extends StatefulWidget {
-
   @override
   _EditProfilScreenState createState() => _EditProfilScreenState();
 }
@@ -20,7 +19,6 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
   File? _selectedImageFile;
   Uint8List? _selectedImageBytes;
   bool _isImageLoading = false;
-
 
   Future<void> _pickImage() async {
     setState(() {
@@ -75,12 +73,8 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
         return null;
       }
 
-      var resp = await StorageHelper.uploadBinary(
-          "avatars",
-          fileName,
-          bytes,
-          fileOptions: const FileOptions(upsert: true)
-      );
+      var resp = await StorageHelper.uploadBinary("avatars", fileName, bytes,
+          fileOptions: const FileOptions(upsert: true));
 
       resp = resp.substring(resp.indexOf('/') + 1);
       return resp;
@@ -107,14 +101,17 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
               FormBuilderTextField(
                 name: 'display_name',
                 initialValue: AuthHelper.getCurrentUserName() ?? '',
-                decoration: const InputDecoration(labelText: "Nom d'utilisateur"),
-                validator: (value) => value == null || value.isEmpty ? 'Champ requis' : null,
+                decoration:
+                    const InputDecoration(labelText: "Nom d'utilisateur"),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Champ requis' : null,
               ),
               const SizedBox(height: 12),
               GestureDetector(
                 onTap: _pickImage,
                 child: FutureBuilder<String?>(
-                  future: StorageHelper.getPublicUrl("avatars", user.userMetadata?['avatar_url']),
+                  future: StorageHelper.getPublicUrl(
+                      "avatars", user.userMetadata?['avatar_url']),
                   builder: (context, snapshot) {
                     Widget child;
                     ImageProvider<Object>? imageProvider;
@@ -127,7 +124,8 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                     } else if (_selectedImageFile != null) {
                       imageProvider = FileImage(_selectedImageFile!);
                       child = const SizedBox.shrink();
-                    } else if (snapshot.connectionState == ConnectionState.waiting) {
+                    } else if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
                       child = const Icon(Icons.camera_alt, size: 40);
                     } else if (snapshot.hasData && snapshot.data != null) {
                       imageProvider = NetworkImage(snapshot.data!);
@@ -158,12 +156,14 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                         UserAttributes(
                           data: {
                             'displayName': formData['display_name'],
-                            'avatar_url': avatarUrl ?? user.userMetadata?['avatar_url'],
+                            'avatar_url':
+                                avatarUrl ?? user.userMetadata?['avatar_url'],
                           },
                         ),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Profil mis à jour avec succès!')),
+                        const SnackBar(
+                            content: Text('Profil mis à jour avec succès!')),
                       );
                       context.go('/profil');
                     } catch (error) {

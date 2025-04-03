@@ -9,7 +9,6 @@ import 'package:sae_mobile/models/review.dart';
 import 'package:sae_mobile/widgets/avis.dart';
 import 'mock.mocks.dart';
 
-
 void main() {
   late MockIDatabase mockDatabase;
   late List<Review> fakeReviews;
@@ -38,40 +37,40 @@ void main() {
     ];
 
     // Configuration du mock pour getRestaurantById
-    when(mockDatabase.getRestaurantById(any)).thenAnswer((_) async =>
-        Restaurant(
-          id_restaurant: 1,
-          name: 'Fake Restaurant',
-          operator: 'Fake Operator',
-          brand: 'Fake Brand',
-          opening_hours: '09:00-18:00',
-          wheelchair: false,
-          vegetarian: false,
-          vegan: false,
-          delivery: false,
-          takeaway: false,
-          internet_access: 'Oui',
-          stars: 5,
-          capacity: 100,
-          drive_through: false,
-          wikidata: 'fake_wikidata',
-          brand_wikidata: 'fake_brand_wikidata',
-          siret: '12345678901234',
-          phone: '0123456789',
-          website: 'https://fakerestaurant.com',
-          facebook: 'https://facebook.com/fakerestaurant',
-          smoking: false,
-          com_insee: 12345,
-          com_nom: 'Fake City',
-          region: 'Fake Region',
-          code_region: 1,
-          departement: 'Fake Departement',
-          code_departement: 1,
-          commune: 'Fake Commune',
-          code_commune: 1,
-          latitude: 0,
-          longitude: 0,
-        ));
+    when(mockDatabase.getRestaurantById(any))
+        .thenAnswer((_) async => Restaurant(
+              id_restaurant: 1,
+              name: 'Fake Restaurant',
+              operator: 'Fake Operator',
+              brand: 'Fake Brand',
+              opening_hours: '09:00-18:00',
+              wheelchair: false,
+              vegetarian: false,
+              vegan: false,
+              delivery: false,
+              takeaway: false,
+              internet_access: 'Oui',
+              stars: 5,
+              capacity: 100,
+              drive_through: false,
+              wikidata: 'fake_wikidata',
+              brand_wikidata: 'fake_brand_wikidata',
+              siret: '12345678901234',
+              phone: '0123456789',
+              website: 'https://fakerestaurant.com',
+              facebook: 'https://facebook.com/fakerestaurant',
+              smoking: false,
+              com_insee: 12345,
+              com_nom: 'Fake City',
+              region: 'Fake Region',
+              code_region: 1,
+              departement: 'Fake Departement',
+              code_departement: 1,
+              commune: 'Fake Commune',
+              code_commune: 1,
+              latitude: 0,
+              longitude: 0,
+            ));
 
     // Configuration du mock pour imageLink
     when(mockDatabase.imageLink(any))

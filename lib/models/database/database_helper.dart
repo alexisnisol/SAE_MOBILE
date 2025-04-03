@@ -13,8 +13,8 @@ class DatabaseHelper {
   static List<dynamic>? _jsonData;
   static bool _isJsonLoaded = false;
 
-  static const String DEFAULT_IMAGE = "https://raw.githubusercontent.com/Purukitto/pokemon-data.json/refs/heads/master/images/items/sprites/1.png";
-
+  static const String DEFAULT_IMAGE =
+      "https://raw.githubusercontent.com/Purukitto/pokemon-data.json/refs/heads/master/images/items/sprites/1.png";
 
   static Future<IDatabase> initialize() async {
     try {
@@ -54,7 +54,8 @@ class DatabaseHelper {
     return _database!.getRestaurants();
   }
 
-  static Future<List<Review>> getReviews(String id) => _database!.getReviews(id);
+  static Future<List<Review>> getReviews(String id) =>
+      _database!.getReviews(id);
 
   static Future<List<Review>> getReviewsRestau(int id) =>
       _database!.getReviewsRestau(id);
@@ -62,7 +63,7 @@ class DatabaseHelper {
   static Future<void> deleteReview(int id) => _database!.deleteReview(id);
 
   static Future<void> addReview(String userId, int restauId, String avis,
-      int etoiles, DateTime date) =>
+          int etoiles, DateTime date) =>
       _database!.addReview(userId, restauId, avis, etoiles, date);
 
   static Future<Restaurant> getRestaurantById(int id) =>
@@ -108,7 +109,8 @@ class DatabaseHelper {
     return _database!.estCuisineLike(userId, cuisineId);
   }
 
-  static void toggleCuisineLike(String userId, int cuisineId, bool isLiked) async {
+  static void toggleCuisineLike(
+      String userId, int cuisineId, bool isLiked) async {
     if (isLiked) {
       await _database!.likeCuisine(userId, cuisineId);
     } else {
@@ -116,7 +118,8 @@ class DatabaseHelper {
     }
   }
 
-  static Future<void> deleteRestaurantFavoris(String userId, int restauId) async {
+  static Future<void> deleteRestaurantFavoris(
+      String userId, int restauId) async {
     await _database!.deleteRestaurantFavoris(userId, restauId);
   }
 
@@ -125,6 +128,8 @@ class DatabaseHelper {
   }
 
   static isRestaurantFavorited(String i, int restaurantId) {
-    return _database!.getRestaurantFavoris(i).then((value) => value.contains(restaurantId));
+    return _database!
+        .getRestaurantFavoris(i)
+        .then((value) => value.contains(restaurantId));
   }
 }
