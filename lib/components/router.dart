@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sae_mobile/models/auth_helper.dart';
+import 'package:sae_mobile/models/helper/auth_helper.dart';
 import 'package:sae_mobile/widgets/auth/login.dart';
 import 'package:sae_mobile/widgets/avis.dart';
 import 'package:sae_mobile/widgets/home_body.dart';
+import 'package:sae_mobile/widgets/profil/edit_profil_screen.dart';
+import 'package:sae_mobile/widgets/profil/preferences_screen.dart';
+import 'package:sae_mobile/widgets/profil/profil_screen.dart';
 import 'package:sae_mobile/widgets/restaurant_detail_screen.dart';
 import '../models/database/database_helper.dart';
 import '../widgets/favoris.dart';
@@ -66,7 +69,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/profil',
-          builder: (context, state) => const Center(child: Text('Profil')),
+          builder: (context, state) => ProfilScreen(),
           redirect: (context, state) {
             if (!AuthHelper.isSignedIn()) {
               return '/login';
@@ -74,6 +77,27 @@ final GoRouter router = GoRouter(
             return null;
           },
         ),
+        GoRoute(
+          path: '/edit_profil',
+          builder: (context, state) => EditProfilScreen(),
+          redirect: (context, state) {
+            if (!AuthHelper.isSignedIn()) {
+              return '/login';
+            }
+            return null;
+          },
+        ),
+        GoRoute(
+          path: '/preferences',
+          builder: (context, state) => PreferencesScreen(),
+          redirect: (context, state) {
+            if (!AuthHelper.isSignedIn()) {
+              return '/login';
+            }
+            return null;
+          },
+        ),
+
         GoRoute(
           path: '/restaurant/:id',
           builder: (context, state) {

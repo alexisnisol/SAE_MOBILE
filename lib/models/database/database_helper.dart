@@ -43,6 +43,7 @@ class DatabaseHelper {
   }
 
   static dynamic getAuth() => _database?.getAuth();
+  static dynamic getStorage() => _database?.getStorage();
 
   static void setDatabase(IDatabase db) {
     _database = db;

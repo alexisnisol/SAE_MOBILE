@@ -36,6 +36,11 @@ class SupabaseDatabase implements IDatabase {
   }
 
   @override
+  SupabaseStorageClient getStorage() {
+    return _supabase.storage;
+  }
+
+  @override
   Future<List<Restaurant>> getRestaurants() async {
     if (!_isInitialized) await initialize();
 
