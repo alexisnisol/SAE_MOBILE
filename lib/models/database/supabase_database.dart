@@ -1,24 +1,25 @@
-import 'package:sae_mobile/models/database/database_helper.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'i_database.dart';
 import '../restaurant.dart';
-import 'sqlite_database.dart';
 import '../review.dart';
 
 class SupabaseDatabase implements IDatabase {
   static bool _isInitialized = false;
   late final SupabaseClient _supabase;
 
-  static String _supabaseUrl = 'https://rwvhbldaozvrcotlajbs.supabase.co';
-  static String _supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3dmhibGRhb3p2cmNvdGxhamJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczODgwMTUsImV4cCI6MjA1Mjk2NDAxNX0.ouVnoV0SrQsPGNpFqe2wzOXwgZbCUi9IEXsoidca5aE';
-
   @override
   Future<void> initialize() async {
     if (!_isInitialized) {
       try {
+        await dotenv.load();
+
+        final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
+        final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+
         await Supabase.initialize(
-          url: _supabaseUrl,
-          anonKey: _supabaseAnonKey,
+          url: supabaseUrl,
+          anonKey: supabaseAnonKey,
         );
         _isInitialized = true;
       } catch (e) {

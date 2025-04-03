@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/models/review.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -74,6 +75,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                context.go('/carte');
+              },
+            ),
             title: Text(restaurant.name),
             actions: [
               IconButton(
@@ -329,9 +336,14 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ),
                         ),
                         SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: _submitReview,
-                          child: Text("Envoyer l'avis"),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end, // Aligner à droite
+                          children: [
+                            ElevatedButton(
+                              onPressed: _submitReview,
+                              child: Text("Envoyer l'avis"),
+                            ),
+                          ],
                         ),
                       ] else
                         Center(
@@ -482,27 +494,34 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     if (restaurant.internet_access == true) services.add("Wi-Fi");
     if (restaurant.drive_through == true) services.add("Drive-through");
     if (services.isEmpty) return const SizedBox();
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Services : ",
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(height: 4),
-        Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: services.map((service) {
-            return Chip(
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.check, color: Colors.green, size: 16),
-                  SizedBox(width: 4),
-                  Text(service),
-                ],
-              ),
-            );
-          }).toList(),
+        const Text("Services : ", style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+
+        // Utilisation d'un slider horizontal
+        SizedBox(
+          height: 40, // Hauteur adaptée pour les Chips
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal, // Slider horizontal
+            itemCount: services.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Chip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check, color: Colors.green, size: 16),
+                      SizedBox(width: 4),
+                      Text(services[index]),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );

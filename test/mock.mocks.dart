@@ -9,6 +9,7 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:sae_mobile/models/database/i_database.dart' as _i3;
 import 'package:sae_mobile/models/restaurant.dart' as _i2;
 import 'package:sae_mobile/models/review.dart' as _i5;
+import 'package:sae_mobile/models/review.dart';
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -57,7 +58,7 @@ class MockIDatabase extends _i1.Mock implements _i3.IDatabase {
           as _i4.Future<List<_i2.Restaurant>>);
 
   @override
-  _i4.Future<List<_i5.Review>> getReviews(int? id) =>
+  _i4.Future<List<_i5.Review>> getReviews(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#getReviews, [id]),
             returnValue: _i4.Future<List<_i5.Review>>.value(<_i5.Review>[]),
@@ -100,5 +101,39 @@ class MockIDatabase extends _i1.Mock implements _i3.IDatabase {
         returnValue: _i4.Future<String>.value('https://example.com/default.png'),
       ) as _i4.Future<String>);
 
+  @override
+  _i4.Future<bool> isRestaurantFavorited(String userId, int restauId) => (
+  super.noSuchMethod(
+    Invocation.method(#isRestaurantFavorited, [userId, restauId]),
+    returnValue: _i4.Future<bool>.value(false),
+  ) as _i4.Future<bool>);
+
+  @override
+  _i4.Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(int restauId) => (
+      super.noSuchMethod(
+        Invocation.method(#getTypeCuisineRestaurant, [restauId]),
+        returnValue: _i4.Future<List<Map<String, dynamic>>>.value([]),
+      ) as _i4.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i4.Future<bool> estCuisineLike(String userId, int restauId) => (
+      super.noSuchMethod(
+        Invocation.method(#estCuisineLike, [userId, restauId]),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
+
+  @override
+  _i4.Future<List<Review>> getReviewsRestau(int restauId) => (
+      super.noSuchMethod(
+        Invocation.method(#getReviewsRestau, [restauId]),
+        returnValue: _i4.Future<List<Review>>.value([]),
+      ) as _i4.Future<List<Review>>);
+
+  @override
+  _i4.Future<List<int>> getRestaurantFavoris(String userId) => (
+      super.noSuchMethod(
+        Invocation.method(#getRestaurantFavoris, [userId]),
+        returnValue: _i4.Future<List<int>>.value([]),
+      ) as _i4.Future<List<int>>);
 }
 
