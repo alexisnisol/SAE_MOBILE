@@ -1,5 +1,5 @@
 import 'package:supabase/supabase.dart';
-import 'database/database_helper.dart';
+import '../database/database_helper.dart';
 
 class AuthHelper {
 

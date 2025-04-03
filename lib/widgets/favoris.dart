@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../models/database/database_helper.dart';
 import '../models/restaurant.dart';
-import '../models/auth_helper.dart';
+import '../models/helper/auth_helper.dart';
 class GroupedFavorisPage extends StatefulWidget {
   const GroupedFavorisPage({super.key});
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../models/auth_helper.dart';
+import '../../models/helper/auth_helper.dart';
 import '../form/input_text_style.dart';
 
 class LoginForm extends StatefulWidget {
