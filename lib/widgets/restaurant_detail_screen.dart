@@ -7,6 +7,9 @@ import '../models/database/database_helper.dart';
 import '../models/helper/auth_helper.dart';
 import '../models/restaurant.dart';
 
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+
 class RestaurantDetailPage extends StatefulWidget {
   final int restaurantId;
   static String? CURRENT_USER_ID = AuthHelper.getCurrentUser().id;
