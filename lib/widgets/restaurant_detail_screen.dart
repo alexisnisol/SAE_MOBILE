@@ -56,22 +56,28 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.restaurantId);
+    print("Hello world !!!");
     return FutureBuilder<Restaurant>(
       future: DatabaseHelper.getRestaurantById(widget.restaurantId),
       builder: (context, snapshot) {
+        print("Je passe");
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
         if (!snapshot.hasData || snapshot.data == null) {
+          print("Non trouvé !!!");
           return const Scaffold(
             body: Center(child: Text("Restaurant introuvable.")),
           );
         }
+        print("Bonjour");
 
         final restaurant = snapshot.data!;
-        print(restaurant.toString());
+        print("Nom du restaurant affiché : ${restaurant.name}");
+
 
         return Scaffold(
           appBar: AppBar(

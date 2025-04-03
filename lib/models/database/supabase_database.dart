@@ -105,6 +105,9 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<Restaurant> getRestaurantById(int id) async {
+    print(id);
+    print(isConnected());
+    print("feur");
     final response = await _supabase.from('RESTAURANT').select().eq(
         'id_restaurant', id);
     return Restaurant.fromMap(response[0] as Map<String, dynamic>);
