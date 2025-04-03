@@ -3,7 +3,11 @@ import '../database/database_helper.dart';
 
 class AuthHelper {
 
-  static final _auth = DatabaseHelper.getAuth();
+  static dynamic _auth = DatabaseHelper.getAuth();
+
+  static setup({required SupabaseClient client}) {
+    _auth = client.auth;
+  }
 
   static Future<void> signUp(String name, String email, String password) async {
     try {
