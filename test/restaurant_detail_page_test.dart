@@ -14,6 +14,7 @@ void main() {
 
   setUp(() {
     mockDatabase = MockIDatabase();
+    DatabaseHelper.setDatabase(mockDatabase);
 
     restaurant = Restaurant(
       id_restaurant: 145,
@@ -48,17 +49,6 @@ void main() {
       latitude: 47.90636889996,
       longitude: 1.9042957,
     );
-  });
-
-  testWidgets("Affichage du nom du restaurant", (WidgetTester tester) async {
-
-    // await DatabaseHelper.initialize();
-    // print(DatabaseHelper.getRestaurantById(145));
-
-
-    // final SQLiteDatabase db = SQLiteDatabase as SQLiteDatabase;
-    // await db.initialize();
-    // print(db.getRestaurants());
 
     RestaurantDetailPage.CURRENT_USER_ID = "1";
 
@@ -72,17 +62,23 @@ void main() {
 
     when(mockDatabase.isConnected()).thenReturn(true);
 
-    when(DatabaseHelper.isRestaurantFavorited('1', restaurant.id_restaurant))
+    when(mockDatabase.isRestaurantFavorited(RestaurantDetailPage.CURRENT_USER_ID!, restaurant.id_restaurant))
         .thenAnswer((_) async => false);
 
-    when(DatabaseHelper.getTypeCuisineRestaurant(restaurant.id_restaurant))
+    when(mockDatabase.getTypeCuisineRestaurant(restaurant.id_restaurant))
         .thenAnswer((_) async => []);
 
-    when(DatabaseHelper.estCuisineLike("1", restaurant.id_restaurant))
+    when(mockDatabase.estCuisineLike(RestaurantDetailPage.CURRENT_USER_ID!, restaurant.id_restaurant))
         .thenAnswer((_) async => false);
 
-    when(DatabaseHelper.getReviewsRestau(restaurant.id_restaurant))
+    when(mockDatabase.getReviewsRestau(restaurant.id_restaurant))
         .thenAnswer((_) async => []);
+
+    when(mockDatabase.getRestaurantFavoris(RestaurantDetailPage.CURRENT_USER_ID!))
+        .thenAnswer((_) async => []);
+  });
+
+  Future<void> _buildWidget(WidgetTester tester) async {
 
     await tester.pumpWidget(
       MaterialApp(
@@ -91,8 +87,27 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+  }
 
-    expect(find.text("McDonald's"), findsOneWidget);
+  testWidgets("Affichage du nom du restaurant", (WidgetTester tester) async {
+    await _buildWidget(tester);
+
+    expect(find.text(restaurant.name), findsWidgets);
+  });
+
+  testWidgets("Affichage de l'image du restaurant", (WidgetTester tester) async {
+    await _buildWidget(tester);
+    expect(find.byType(Image), findsOneWidget);
+  });
+
+  testWidgets("Affichage des horaires d'ouverture", (WidgetTester tester) async {
+    await _buildWidget(tester);
+    expect(find.text(restaurant.opening_hours), findsOneWidget);
+  });
+
+  testWidgets("Affichage du type de cuisine", (WidgetTester tester) async {
+    await _buildWidget(tester);
+    expect(find.text("Fast Food"), findsNothing);
   });
 }
 

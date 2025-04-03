@@ -1,8 +1,6 @@
-import 'package:sae_mobile/models/database/database_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'i_database.dart';
 import '../restaurant.dart';
-import 'sqlite_database.dart';
 import '../review.dart';
 
 class SupabaseDatabase implements IDatabase {
@@ -105,9 +103,6 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<Restaurant> getRestaurantById(int id) async {
-    print(id);
-    print(isConnected());
-    print("feur");
     final response = await _supabase.from('RESTAURANT').select().eq(
         'id_restaurant', id);
     return Restaurant.fromMap(response[0] as Map<String, dynamic>);

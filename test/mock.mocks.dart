@@ -128,5 +128,12 @@ class MockIDatabase extends _i1.Mock implements _i3.IDatabase {
         Invocation.method(#getReviewsRestau, [restauId]),
         returnValue: _i4.Future<List<Review>>.value([]),
       ) as _i4.Future<List<Review>>);
+
+  @override
+  _i4.Future<List<int>> getRestaurantFavoris(String userId) => (
+      super.noSuchMethod(
+        Invocation.method(#getRestaurantFavoris, [userId]),
+        returnValue: _i4.Future<List<int>>.value([]),
+      ) as _i4.Future<List<int>>);
 }
 
