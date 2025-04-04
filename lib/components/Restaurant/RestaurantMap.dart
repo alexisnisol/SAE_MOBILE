@@ -33,6 +33,7 @@ class _RestaurantMapState extends State<RestaurantMap> {
   late List<Marker> _markers;
   late List<Polyline> _polylines;
   bool _initialized = false;
+  double _currentZoom = 15.0;
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _RestaurantMapState extends State<RestaurantMap> {
     _mapController = MapController();
     _markers = [];
     _polylines = [];
+    _currentZoom = widget.zoom;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeMap();
       setState(() => _initialized = true);
@@ -50,37 +52,70 @@ class _RestaurantMapState extends State<RestaurantMap> {
     debugPrint('Initializing map with restaurant at: '
         '${widget.restaurant.latitude}, ${widget.restaurant.longitude}');
 
+    // Écoute les changements de zoom
+    _mapController.mapEventStream.listen((event) {
+      if (event is MapEventMove && event.zoom != _currentZoom) {
+        setState(() {
+          _currentZoom = event.zoom;
+          _updateMarkers();
+        });
+      }
+    });
+
     _updateMarkers();
     _updatePolylines();
     _adjustCameraPosition();
   }
 
+  double _getMarkerSize() {
+    // Ajuste la taille du marqueur en fonction du zoom
+    // Plus le zoom est élevé (plus on est proche), plus le marqueur est grand
+    const double minSize = 30.0;
+    const double maxSize = 60.0;
+    const double minZoom = 10.0;
+    const double maxZoom = 18.0;
+
+    return minSize + ((maxSize - minSize) *
+        ((_currentZoom - minZoom) / (maxZoom - minZoom))).clamp(minSize, maxSize);
+  }
+
+  double _getIconSize() {
+    // Ajuste la taille de l'icône proportionnellement
+    return _getMarkerSize() * 0.6;
+  }
+
   void _updateMarkers() {
     _markers = [];
     final restaurant = widget.restaurant;
+    final markerSize = _getMarkerSize();
+    final iconSize = _getIconSize();
 
-    // Restaurant marker - plus visible avec un fond et une taille augmentée
+    // Restaurant marker
     if (_isValidLatLng(restaurant.latitude, restaurant.longitude)) {
       _markers.add(
         Marker(
           point: LatLng(restaurant.latitude, restaurant.longitude),
-          width: 50,
-          height: 50,
+          width: markerSize,
+          height: markerSize,
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.red,
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.white, width: 2),
+              borderRadius: BorderRadius.circular(markerSize / 2),
+              border: Border.all(
+                color: Colors.white,
+                width: markerSize / 15,
+              ),
             ),
-            child: const Icon(Icons.restaurant, color: Colors.white, size: 30),
+            child: Icon(
+              Icons.restaurant,
+              color: Colors.white,
+              size: iconSize,
+            ),
           ),
         ),
       );
-      debugPrint('Added restaurant marker');
-    } else {
-      debugPrint('Invalid restaurant coordinates: '
-          '${restaurant.latitude}, ${restaurant.longitude}');
+      debugPrint('Added restaurant marker with size $markerSize');
     }
 
     // User location marker
@@ -92,20 +127,27 @@ class _RestaurantMapState extends State<RestaurantMap> {
         _markers.add(
           Marker(
             point: LatLng(userPos.latitude, userPos.longitude),
-            width: 50,
-            height: 50,
+            width: markerSize,
+            height: markerSize,
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.blue,
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(markerSize / 2),
+                border: Border.all(
+                  color: Colors.white,
+                  width: markerSize / 15,
+                ),
               ),
-              child: const Icon(Icons.person_pin, color: Colors.white, size: 30),
+              child: Icon(
+                Icons.person_pin,
+                color: Colors.white,
+                size: iconSize,
+              ),
             ),
           ),
         );
-        debugPrint('Added user location marker');
+        debugPrint('Added user location marker with size $markerSize');
       }
     }
   }
@@ -126,10 +168,10 @@ class _RestaurantMapState extends State<RestaurantMap> {
               LatLng(widget.restaurant.latitude, widget.restaurant.longitude),
             ],
             color: Colors.blue.withOpacity(0.7),
-            strokeWidth: 4, // Ligne plus épaisse
+            strokeWidth: _currentZoom / 4, // Ligne qui s'ajuste avec le zoom
           ),
         );
-        debugPrint('Added route polyline');
+        debugPrint('Added route polyline with strokeWidth ${_currentZoom / 4}');
       }
     }
   }
@@ -198,6 +240,11 @@ class _RestaurantMapState extends State<RestaurantMap> {
           interactionOptions: const InteractionOptions(
             flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
           ),
+          onMapReady: () {
+            setState(() {
+              _currentZoom = _mapController.camera.zoom;
+            });
+          },
         ),
         children: [
           TileLayer(
