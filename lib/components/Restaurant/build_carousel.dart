@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import '../../models/database/database_helper.dart';
 import '../../models/restaurant.dart';
 import '../../models/location_service.dart';
-import '../../models/viewmodels/settings_viewmodel.dart';
-import 'title_section.dart';
-import 'carousel_section.dart';
+import 'card_restaurant.dart';
 
 class RestaurantCarousel extends StatefulWidget {
-  const RestaurantCarousel({super.key});
+  final String title;
+  final TextStyle? titleStyle;
+  final bool Function(Restaurant, LocationService)? filter;
+
+  const RestaurantCarousel({
+    super.key,
+    required this.title,
+    this.titleStyle,
+    this.filter,
+  });
 
   @override
   State<RestaurantCarousel> createState() => _RestaurantCarouselState();
@@ -16,56 +23,64 @@ class RestaurantCarousel extends StatefulWidget {
 
 class _RestaurantCarouselState extends State<RestaurantCarousel> {
   late Future<List<Restaurant>> _restaurantsFuture;
-  late Future<void> _locationFuture;
   final LocationService _locationService = LocationService();
+  final CarouselController _carouselController = CarouselController();
 
   @override
   void initState() {
     super.initState();
     _restaurantsFuture = DatabaseHelper.getRestaurants();
+    _locationService.getUserLocation(false);
   }
 
   @override
   Widget build(BuildContext context) {
-    _locationFuture = _locationService.getUserLocation(
-        context.watch<SettingsViewModel>().isGeolocationDisabled);
-    return FutureBuilder(
-      future: Future.wait([_restaurantsFuture, _locationFuture]),
-      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Erreur: ${snapshot.error}'));
-        }
-
-        final restaurants = snapshot.data![0] as List<Restaurant>;
-        if (restaurants.isEmpty) {
-          return const Center(child: Text('Aucun restaurant disponible'));
-        }
-
-        return Column(
-          children: [
-            TitleSection(),
-            if (_locationService.isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: LinearProgressIndicator(),
-              ),
-            if (_locationService.error != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  _locationService.error!,
-                  style: TextStyle(color: Colors.red[600]),
-                ),
-              ),
-            CarouselSection(
-              restaurants: restaurants,
-              locationService: _locationService, // Passez le service complet
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8, bottom: 16),
+          child: Text(
+            widget.title,
+            style: widget.titleStyle ?? Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        );
-      },
+          ),
+        ),
+        FutureBuilder<List<Restaurant>>(
+          future: _restaurantsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Erreur: ${snapshot.error}'));
+            }
+
+            List<Restaurant> restaurants = snapshot.data ?? [];
+            if (widget.filter != null) {
+              restaurants = restaurants.where((r) => widget.filter!(r, _locationService)).toList();
+            }
+
+            return CarouselSlider(
+              items: restaurants.map((restaurant) {
+                return RestaurantCard(
+                  restaurant: restaurant,
+                  locationService: _locationService,
+                );
+              }).toList(),
+              options: CarouselOptions(
+                autoPlay: false,
+                enlargeCenterPage: true,
+                viewportFraction: 0.8,
+                aspectRatio: 1.5,
+                enableInfiniteScroll: true,
+                scrollPhysics: const BouncingScrollPhysics(),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

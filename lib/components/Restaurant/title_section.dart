@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TitleSection extends StatelessWidget {
+  final String title;
+
+  const TitleSection({
+    super.key,
+    required this.title,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -8,8 +15,8 @@ class TitleSection extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          'Nos Restaurants',
-          style: TextStyle(
+          title,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black,
