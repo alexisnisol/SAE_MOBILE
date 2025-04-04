@@ -50,9 +50,10 @@ class RestaurantCard extends StatelessWidget {
                         top: Radius.circular(15),
                       ),
                     ),
-                    child: imageSnapshot.connectionState == ConnectionState.waiting
-                        ? const Center(child: CircularProgressIndicator())
-                        : null,
+                    child:
+                        imageSnapshot.connectionState == ConnectionState.waiting
+                            ? const Center(child: CircularProgressIndicator())
+                            : null,
                   ),
                   const Positioned(
                     top: 10,
@@ -86,10 +87,12 @@ class RestaurantCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    if (distance != null && !locationService.isUsingDefaultLocation())
+                    if (distance != null &&
+                        !locationService.isUsingDefaultLocation())
                       Row(
                         children: [
-                          const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                          const Icon(Icons.location_on,
+                              size: 14, color: Colors.grey),
                           const SizedBox(width: 4),
                           Text(
                             '${distance.toStringAsFixed(1)} km',

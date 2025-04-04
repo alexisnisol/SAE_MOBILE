@@ -32,8 +32,9 @@ void main() {
     expect(viewModel.isGeolocationDisabled, true);
   });
 
-
-  test('Changer la valeur du thème doit mettre à jour le repository et notifier ceux qui écoutent', () async {
+  test(
+      'Changer la valeur du thème doit mettre à jour le repository et notifier ceux qui écoutent',
+      () async {
     when(mockRepository.saveSettingsTheme(any)).thenAnswer((_) async {});
     when(mockRepository.getSettingsTheme()).thenAnswer((_) async => false);
     when(mockRepository.getSettingsGeolocation()).thenAnswer((_) async => true);
@@ -51,7 +52,9 @@ void main() {
     expect(listenerCalled, true);
   });
 
-  test('Changer la valeur de géolocalisation doit mettre à jour le repository et notifier ceux qui écoutent', () async {
+  test(
+      'Changer la valeur de géolocalisation doit mettre à jour le repository et notifier ceux qui écoutent',
+      () async {
     when(mockRepository.saveSettingsGeolocation(any)).thenAnswer((_) async {});
     when(mockRepository.getSettingsTheme()).thenAnswer((_) async => false);
     when(mockRepository.getSettingsGeolocation()).thenAnswer((_) async => true);
@@ -69,9 +72,12 @@ void main() {
     expect(listenerCalled, true);
   });
 
-  test('getSettings doit récupérer les valeurs du repository et notifier ceux qui écoutent', () async {
+  test(
+      'getSettings doit récupérer les valeurs du repository et notifier ceux qui écoutent',
+      () async {
     when(mockRepository.getSettingsTheme()).thenAnswer((_) async => true);
-    when(mockRepository.getSettingsGeolocation()).thenAnswer((_) async => false);
+    when(mockRepository.getSettingsGeolocation())
+        .thenAnswer((_) async => false);
 
     bool listenerCalled = false;
     viewModel.addListener(() {

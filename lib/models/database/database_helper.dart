@@ -108,7 +108,7 @@ class DatabaseHelper {
     return _database!.estCuisineLike(userId, cuisineId);
   }
 
-  static void toggleCuisineLike(String userId, int cuisineId, bool isLiked) async {
+  static Future<void> toggleCuisineLike(String userId, int cuisineId, bool isLiked) async {
     if (isLiked) {
       await _database!.likeCuisine(userId, cuisineId);
     } else {

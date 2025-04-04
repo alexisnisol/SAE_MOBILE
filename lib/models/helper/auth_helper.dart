@@ -2,7 +2,6 @@ import 'package:supabase/supabase.dart';
 import '../database/database_helper.dart';
 
 class AuthHelper {
-
   static dynamic _auth = DatabaseHelper.getAuth();
 
   static setup({required SupabaseClient client}) {
@@ -11,7 +10,8 @@ class AuthHelper {
 
   static Future<void> signUp(String name, String email, String password) async {
     try {
-      await _auth.signUp(email: email, password: password, data: {"displayName": name});
+      await _auth.signUp(
+          email: email, password: password, data: {"displayName": name});
     } on AuthException catch (e) {
       throw Exception('Failed to sign up: ${e.message}');
     }
@@ -40,9 +40,8 @@ class AuthHelper {
   static String getCurrentUserName() {
     return _auth.currentUser!.userMetadata?['displayName'] ?? 'Inconnu';
   }
-  
+
   static bool isSignedIn() {
     return _auth.currentUser != null;
   }
-
 }

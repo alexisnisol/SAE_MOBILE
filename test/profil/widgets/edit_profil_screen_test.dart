@@ -10,8 +10,9 @@ void main() {
   setUp(() {
     AuthHelper.setup(client: MockSupabaseClient());
   });
-  
-  testWidgets("Vérifie la présence des composants d'édition", (WidgetTester tester) async {
+
+  testWidgets("Vérifie la présence des composants d'édition",
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: EditProfilScreen(),
@@ -26,8 +27,9 @@ void main() {
     expect(find.text("Nom d'utilisateur"), findsOneWidget);
     expect(find.text('Enregistrer'), findsOneWidget);
   });
-  
-  testWidgets("Vérifie que les champs sont obligatoires", (WidgetTester tester) async {
+
+  testWidgets("Vérifie que les champs sont obligatoires",
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: EditProfilScreen(),

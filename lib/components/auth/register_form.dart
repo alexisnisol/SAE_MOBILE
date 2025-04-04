@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -14,7 +13,6 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -24,13 +22,31 @@ class _RegisterFormState extends State<RegisterForm> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          StyledTextField(name: "name", hintText: "Nom", isRequired: true, icon: Icons.person),
+          StyledTextField(
+              name: "name",
+              hintText: "Nom",
+              isRequired: true,
+              icon: Icons.person),
           SizedBox(height: 16),
-          StyledTextField(name: "email", hintText: "Email", isRequired: true, icon: Icons.email),
+          StyledTextField(
+              name: "email",
+              hintText: "Email",
+              isRequired: true,
+              icon: Icons.email),
           SizedBox(height: 16),
-          StyledTextField(name: "password", hintText: "Mot de passe", isRequired: true, isVisible: false, icon: Icons.lock),
+          StyledTextField(
+              name: "password",
+              hintText: "Mot de passe",
+              isRequired: true,
+              isVisible: false,
+              icon: Icons.lock),
           SizedBox(height: 16),
-          StyledTextField(name: "confirm_password", hintText: "Confirmer le mot de passe", isRequired: true, isVisible: false, icon: Icons.lock),
+          StyledTextField(
+              name: "confirm_password",
+              hintText: "Confirmer le mot de passe",
+              isRequired: true,
+              isVisible: false,
+              icon: Icons.lock),
           SizedBox(height: 16),
           FormBuilderCheckbox(
             name: 'accept_terms',
@@ -46,32 +62,39 @@ class _RegisterFormState extends State<RegisterForm> {
                 final name = _formKey.currentState!.value['name'];
                 final email = _formKey.currentState!.value['email'];
                 final password = _formKey.currentState!.value['password'];
-                final confirmPassword = _formKey.currentState!.value['confirm_password'];
+                final confirmPassword =
+                    _formKey.currentState!.value['confirm_password'];
 
-                if (!checkName(context, name)){
+                if (!checkName(context, name)) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Le nom doit contenir uniquement des lettres")),
+                    SnackBar(
+                        content: Text(
+                            "Le nom doit contenir uniquement des lettres")),
                   );
                   return;
                 }
 
-                if (!checkEmail(context, email)){
+                if (!checkEmail(context, email)) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("L'email n'est pas valide")),
                   );
                   return;
                 }
 
-                if (!checkPasswordMatch(context, password, confirmPassword)){
+                if (!checkPasswordMatch(context, password, confirmPassword)) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Les mots de passe ne correspondent pas")),
+                    SnackBar(
+                        content:
+                            Text("Les mots de passe ne correspondent pas")),
                   );
                   return;
                 }
 
-                if (!checkPassword(context, password)){
+                if (!checkPassword(context, password)) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre")),
+                    SnackBar(
+                        content: Text(
+                            "Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre")),
                   );
                   return;
                 }
@@ -94,16 +117,19 @@ class _RegisterFormState extends State<RegisterForm> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff587c60),
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
-            child: Text("S'inscrire", style: TextStyle(fontSize: 16, color: Colors.white)),
+            child: Text("S'inscrire",
+                style: TextStyle(fontSize: 16, color: Colors.white)),
           ),
         ],
       ),
     );
   }
 
-  static checkPasswordMatch(BuildContext context, String password, String confirmPassword) {
+  static checkPasswordMatch(
+      BuildContext context, String password, String confirmPassword) {
     return password == confirmPassword;
   }
 
