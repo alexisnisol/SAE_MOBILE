@@ -22,7 +22,7 @@ void main() {
       Review(
         id: 1,
         restaurantId: 1,
-        userId: 1,
+        userId: '1',
         etoiles: 4,
         avis: "Great food",
         date: DateTime.now(),
@@ -30,7 +30,7 @@ void main() {
       Review(
         id: 2,
         restaurantId: 1,
-        userId: 2,
+        userId: '2',
         etoiles: 5,
         avis: "Excellent service!",
         date: DateTime.now(),
@@ -78,6 +78,7 @@ void main() {
         .thenAnswer((_) async => 'https://example.com/default.png');
 
     // Utilisation de la liste copiée pour éviter des problèmes de référence
+
     when(mockDatabase.getReviews("1"))
         .thenAnswer((_) async => List<Review>.from(fakeReviews));
 
@@ -90,6 +91,7 @@ void main() {
       fakeReviews.removeWhere((review) => review.id == reviewId);
 
       // Mise à jour du mock pour retourner la liste modifiée
+
       when(mockDatabase.getReviews("1"))
           .thenAnswer((_) async => List<Review>.from(fakeReviews));
     });
