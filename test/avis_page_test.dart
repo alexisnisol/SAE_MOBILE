@@ -21,7 +21,7 @@ void main() {
       Review(
         id: 1,
         restaurantId: 1,
-        userId: '1',
+        userId: 1,
         etoiles: 4,
         avis: "Great food",
         date: DateTime.now(),
@@ -29,7 +29,7 @@ void main() {
       Review(
         id: 2,
         restaurantId: 1,
-        userId: '2',
+        userId: 2,
         etoiles: 5,
         avis: "Excellent service!",
         date: DateTime.now(),
