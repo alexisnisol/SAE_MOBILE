@@ -22,6 +22,7 @@ abstract class IDatabase {
   Future<void> deleteRestaurantFavoris(String userId, int restauId);
   Future<void> addRestaurantFavoris(String userId, int restauId);
   Future<bool> isRestaurantFavorited(String userId, int restauId);
+  Future<void> addReviewWithImage(String userId, int restaurantId, String avis, int etoiles, DateTime date, String? imageUrl);
 
 
 }

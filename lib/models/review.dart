@@ -5,7 +5,7 @@ class Review {
   final int etoiles;
   final String avis;
   final DateTime date;
-
+  final String? imageUrl;
   Review({
     required this.id,
     required this.restaurantId,
@@ -13,6 +13,7 @@ class Review {
     required this.etoiles,
     required this.avis,
     required this.date,
+    this.imageUrl,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
@@ -25,6 +26,8 @@ class Review {
       date: (json['date_avis'] != null && json['date_avis'] is String)
           ? DateTime.tryParse(json['date_avis']) ?? DateTime.now()
           : DateTime.now(),
+      imageUrl: json['image_url'],
+
     );
   }
 }

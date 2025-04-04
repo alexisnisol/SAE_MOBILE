@@ -125,6 +125,12 @@ class SQLiteDatabase implements IDatabase {
     throw UnimplementedError();
   }
 
+  @override
+  Future<void> addReviewWithImage(String userId, int restaurantId, String avis, int etoiles, DateTime date, String? imageUrl) {
+    // TODO: implement addReviewWithImage
+    throw UnimplementedError();
+  }
+
   
 }
 
