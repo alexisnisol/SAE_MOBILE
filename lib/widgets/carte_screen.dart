@@ -70,7 +70,7 @@ class _CartePageState extends State<CarteScreen> {
           ),
         ),
       );
-    }).toList();
+    }).toList(); // d
   }
 
   @override
