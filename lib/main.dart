@@ -7,7 +7,6 @@ import 'components/router.dart';
 import 'models/database/database_helper.dart';
 
 Future<void> main() async {
-
   if (!kIsWeb) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
@@ -22,26 +21,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return  MultiProvider(
+    return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create:
-          (context) => SettingsViewModel()
-        ),
+        ChangeNotifierProvider(create: (context) => SettingsViewModel()),
       ],
-      child: Consumer<SettingsViewModel>
-        (builder: (BuildContext context, SettingsViewModel value, child) {
-            return MaterialApp.router(
-              title: 'Taste&Tell',
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-                brightness: value.isDark ? Brightness.dark : Brightness.light,
-              ),
-              routerConfig: router,
-              debugShowCheckedModeBanner: false,
-            );
-        }),
+      child: Consumer<SettingsViewModel>(
+          builder: (BuildContext context, SettingsViewModel value, child) {
+        return MaterialApp.router(
+          title: 'Taste&Tell',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            brightness: value.isDark ? Brightness.dark : Brightness.light,
+          ),
+          routerConfig: router,
+          debugShowCheckedModeBanner: false,
+        );
+      }),
     );
   }
 }

@@ -19,7 +19,9 @@ void main() {
       expect(result, false);
     });
 
-    test('getSettingsTheme doit renvoyer la valeur stocké dans les SharedPreferences', () async {
+    test(
+        'getSettingsTheme doit renvoyer la valeur stocké dans les SharedPreferences',
+        () async {
       SharedPreferences.setMockInitialValues({
         'darkMode': true,
       });
@@ -29,7 +31,8 @@ void main() {
       expect(result, true);
     });
 
-    test('saveSettingsTheme doit stocker la valeur dans les SharedPreferences', () async {
+    test('saveSettingsTheme doit stocker la valeur dans les SharedPreferences',
+        () async {
       SharedPreferences.setMockInitialValues({});
 
       await repository.saveSettingsTheme(true);
@@ -48,7 +51,9 @@ void main() {
       expect(result, false);
     });
 
-    test('getSettingsGeolocation doit renvoyer la valeur stocké dans les SharedPreferences', () async {
+    test(
+        'getSettingsGeolocation doit renvoyer la valeur stocké dans les SharedPreferences',
+        () async {
       SharedPreferences.setMockInitialValues({
         'geolocationEnabled': true,
       });
@@ -58,7 +63,9 @@ void main() {
       expect(result, true);
     });
 
-    test('saveSettingsGeolocation doit stocker la valeur dans les SharedPreferences', () async {
+    test(
+        'saveSettingsGeolocation doit stocker la valeur dans les SharedPreferences',
+        () async {
       SharedPreferences.setMockInitialValues({});
 
       await repository.saveSettingsGeolocation(true);

@@ -4,7 +4,6 @@ import 'package:sae_mobile/models/helper/auth_helper.dart';
 import 'package:sae_mobile/models/helper/storage_helper.dart';
 
 class ProfilScreen extends StatelessWidget {
-
   const ProfilScreen({super.key});
 
   @override
@@ -24,7 +23,8 @@ class ProfilScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             FutureBuilder<String?>(
-              future: StorageHelper.getPublicUrl("avatars", user.userMetadata?['avatar_url']),
+              future: StorageHelper.getPublicUrl(
+                  "avatars", user.userMetadata?['avatar_url']),
               builder: (context, snapshot) {
                 ImageProvider<Object>? imageProvider;
 
@@ -39,7 +39,8 @@ class ProfilScreen extends StatelessWidget {
                 return CircleAvatar(
                   radius: 40,
                   backgroundImage: imageProvider,
-                  child: (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null)
+                  child: (snapshot.connectionState == ConnectionState.waiting ||
+                          snapshot.data == null)
                       ? const Icon(Icons.person, size: 40)
                       : null,
                 );
@@ -58,7 +59,8 @@ class ProfilScreen extends StatelessWidget {
               icon: const Icon(Icons.edit),
               label: const Text("Modifier le profil"),
               style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
             ),
             const SizedBox(height: 8),
@@ -69,7 +71,8 @@ class ProfilScreen extends StatelessWidget {
               icon: const Icon(Icons.settings),
               label: const Text("Gérer les préférences"),
               style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
             ),
             const SizedBox(height: 16),
@@ -78,7 +81,8 @@ class ProfilScreen extends StatelessWidget {
                 context.go('/logout');
               },
               icon: const Icon(Icons.logout, color: Colors.red),
-              label: const Text("Se déconnecter", style: TextStyle(color: Colors.red)),
+              label: const Text("Se déconnecter",
+                  style: TextStyle(color: Colors.red)),
             ),
           ],
         ),

@@ -36,22 +36,18 @@ class MockSettingsRepository extends _i1.Mock
       super.noSuchMethod(Invocation.method(#saveSettingsTheme, [value]));
 
   @override
-  _i3.Future<bool> getSettingsTheme() =>
-      (super.noSuchMethod(
-            Invocation.method(#getSettingsTheme, []),
-            returnValue: _i3.Future<bool>.value(false),
-          )
-          as _i3.Future<bool>);
+  _i3.Future<bool> getSettingsTheme() => (super.noSuchMethod(
+        Invocation.method(#getSettingsTheme, []),
+        returnValue: _i3.Future<bool>.value(false),
+      ) as _i3.Future<bool>);
 
   @override
   dynamic saveSettingsGeolocation(bool? value) =>
       super.noSuchMethod(Invocation.method(#saveSettingsGeolocation, [value]));
 
   @override
-  _i3.Future<bool> getSettingsGeolocation() =>
-      (super.noSuchMethod(
-            Invocation.method(#getSettingsGeolocation, []),
-            returnValue: _i3.Future<bool>.value(false),
-          )
-          as _i3.Future<bool>);
+  _i3.Future<bool> getSettingsGeolocation() => (super.noSuchMethod(
+        Invocation.method(#getSettingsGeolocation, []),
+        returnValue: _i3.Future<bool>.value(false),
+      ) as _i3.Future<bool>);
 }

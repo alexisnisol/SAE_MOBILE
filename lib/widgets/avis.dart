@@ -5,7 +5,6 @@ import '../models/database/database_helper.dart';
 import '../models/restaurant.dart';
 import '../models/helper/auth_helper.dart';
 
-
 class AvisPage extends StatefulWidget {
   const AvisPage({super.key});
 
@@ -91,35 +90,40 @@ class _AvisPageState extends State<AvisPage> {
                       future: DatabaseHelper.imageLink(restaurant.name),
                       builder: (context, imageSnapshot) {
                         String? imageUrl = imageSnapshot.data;
-                        bool imageLoaded =
-                            imageSnapshot.connectionState == ConnectionState.done && imageUrl != null;
+                        bool imageLoaded = imageSnapshot.connectionState ==
+                                ConnectionState.done &&
+                            imageUrl != null;
                         return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
                             leading: imageLoaded
                                 ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                imageUrl!,
-                                width: 65,
-                                height: 75,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset(
-                                    'assets/images/default_restaurant.png',
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      imageUrl!,
+                                      width: 65,
+                                      height: 75,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/images/default_restaurant.png',
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : const SizedBox(
                                     width: 50,
                                     height: 50,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
-                            )
-                                : const SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: Center(child: CircularProgressIndicator()),
-                            ),
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  ),
                             title: Text(
                               review.avis,
                               style: const TextStyle(fontSize: 16),
@@ -130,7 +134,8 @@ class _AvisPageState extends State<AvisPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    restaurant.name, // Affichage du nom du restaurant
+                                    restaurant
+                                        .name, // Affichage du nom du restaurant
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,

@@ -27,23 +27,22 @@ class StyledTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FormBuilderTextField(
-        name: name,
-        obscureText: !isVisible,
-        decoration: InputDecoration(
-          labelText: hintText ?? "Entrez votre texte",
-          prefixIcon: icon != null ? Icon(icon) : null,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        validator: isRequired
-            ? FormBuilderValidators.compose([FormBuilderValidators.required()])
-            : null,
-        inputFormatters: <TextInputFormatter>[
-          if (formatter == "number")
-            FilteringTextInputFormatter.digitsOnly,
-          if (formatter == "decimal")
-            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-        ]
-      ),
+          name: name,
+          obscureText: !isVisible,
+          decoration: InputDecoration(
+            labelText: hintText ?? "Entrez votre texte",
+            prefixIcon: icon != null ? Icon(icon) : null,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          validator: isRequired
+              ? FormBuilderValidators.compose(
+                  [FormBuilderValidators.required()])
+              : null,
+          inputFormatters: <TextInputFormatter>[
+            if (formatter == "number") FilteringTextInputFormatter.digitsOnly,
+            if (formatter == "decimal")
+              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+          ]),
     );
   }
 }

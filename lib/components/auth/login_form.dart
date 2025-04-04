@@ -13,7 +13,6 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -23,9 +22,18 @@ class _LoginFormState extends State<LoginForm> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          StyledTextField(name: "email", hintText: "Email", isRequired: true, icon: Icons.email),
+          StyledTextField(
+              name: "email",
+              hintText: "Email",
+              isRequired: true,
+              icon: Icons.email),
           SizedBox(height: 16),
-          StyledTextField(name: "password", hintText: "Mot de passe", isRequired: true, isVisible: false, icon: Icons.lock),
+          StyledTextField(
+              name: "password",
+              hintText: "Mot de passe",
+              isRequired: true,
+              isVisible: false,
+              icon: Icons.lock),
           SizedBox(height: 16),
           ElevatedButton(
             onPressed: () async {
@@ -51,9 +59,11 @@ class _LoginFormState extends State<LoginForm> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff587c60),
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
-            child: Text("Se connecter", style: TextStyle(fontSize: 16, color: Colors.white)),
+            child: Text("Se connecter",
+                style: TextStyle(fontSize: 16, color: Colors.white)),
           ),
         ],
       ),
