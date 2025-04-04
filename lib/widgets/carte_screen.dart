@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import '../models/database/database_helper.dart';
+import '../models/location_service.dart';
 import '../models/restaurant.dart';
 
 class CarteScreen extends StatefulWidget {
@@ -9,14 +12,17 @@ class CarteScreen extends StatefulWidget {
 }
 
 class _CartePageState extends State<CarteScreen> {
-  late Future<List<Restaurant>> futureRestaurants;
+  late final MapController _mapController;
   List<Restaurant> allRestaurants = [];
   List<Restaurant> filteredRestaurants = [];
   TextEditingController searchController = TextEditingController();
+  final LocationService locationService = LocationService();
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _mapController = MapController();
     _loadRestaurants();
   }
 
@@ -24,6 +30,7 @@ class _CartePageState extends State<CarteScreen> {
     allRestaurants = await DatabaseHelper.getRestaurants();
     setState(() {
       filteredRestaurants = allRestaurants;
+      _isLoading = false;
     });
   }
 
@@ -34,6 +41,36 @@ class _CartePageState extends State<CarteScreen> {
           restaurant.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
+  }
+
+  List<Marker> _buildRestaurantMarkers() {
+    return filteredRestaurants.map((restaurant) {
+      return Marker(
+        point: LatLng(restaurant.latitude, restaurant.longitude),
+        width: 25,
+        height: 25,
+        child: GestureDetector(
+          onTap: () {
+            context.go('/restaurant/${restaurant.id_restaurant}');
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white,
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              Icons.restaurant,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+        ),
+      );
+    }).toList(); // d
   }
 
   @override
@@ -47,66 +84,44 @@ class _CartePageState extends State<CarteScreen> {
             border: InputBorder.none,
             prefixIcon: Icon(Icons.search),
           ),
-          onChanged: _filterRestaurants, // Filtre en temps réel
+          onChanged: _filterRestaurants,
         ),
       ),
-      body: filteredRestaurants.isEmpty
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : filteredRestaurants.isEmpty
           ? Center(child: Text('Aucun restaurant trouvé'))
-          : ListView.builder(
-        itemCount: filteredRestaurants.length,
-        itemBuilder: (context, index) {
-          final restaurant = filteredRestaurants[index];
-          return Card(
-            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: InkWell(
-              onTap: () {
-                // Navigation vers la page de détail via GoRouter
-                context.go('/restaurant/${restaurant.id_restaurant}');
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    FutureBuilder<String>(
-                      future: DatabaseHelper.imageLink(restaurant.name),
-                      builder: (context, imageSnapshot) {
-                        final imageUrl = imageSnapshot.data ??
-                            DatabaseHelper.DEFAULT_IMAGE;
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            imageUrl,
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            restaurant.name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16),
-                          ),
-                          SizedBox(height: 4),
-                          Text(restaurant.commune),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.arrow_forward_ios, size: 16),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+          : FlutterMap(
+        mapController: _mapController,
+        options: MapOptions(
+          initialCenter: LatLng(
+            filteredRestaurants.first.latitude,
+            filteredRestaurants.first.longitude,
+          ),
+          initialZoom: 13.0,
+          interactionOptions: const InteractionOptions(
+            flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+          ),
+        ),
+        children: [
+          TileLayer(
+            urlTemplate:
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            subdomains: const ['a', 'b', 'c'],
+            userAgentPackageName: 'com.example.sae_mobile',
+          ),
+          MarkerLayer(
+            markers: _buildRestaurantMarkers(),
+          ),
+        ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _mapController.dispose();
+    searchController.dispose();
+    super.dispose();
   }
 }
