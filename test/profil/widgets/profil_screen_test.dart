@@ -9,8 +9,10 @@ void main() {
   setUp(() {
     AuthHelper.setup(client: MockSupabaseClient());
   });
-  
-  testWidgets("Vérifie la présence de tous les composants dans le widget Profil, incluant le nom de l'utilisateur connecté, et les boutons de gestion", (WidgetTester tester) async {
+
+  testWidgets(
+      "Vérifie la présence de tous les composants dans le widget Profil, incluant le nom de l'utilisateur connecté, et les boutons de gestion",
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: ProfilScreen(),

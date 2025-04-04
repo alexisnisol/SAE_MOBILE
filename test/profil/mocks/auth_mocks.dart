@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class MockUser extends Mock implements User {
   @override
   final String id = 'test-user-id';
-  
+
   @override
   Map<String, dynamic>? userMetadata = {
     'displayName': 'Test User',

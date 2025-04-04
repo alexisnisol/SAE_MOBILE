@@ -17,7 +17,7 @@ class LocationService {
       _isLoading = true;
       _error = null;
 
-      if(isGeolocationDisabled) {
+      if (isGeolocationDisabled) {
         _setDefaultPosition();
         _error = 'Service de localisation désactivé';
         return;
@@ -47,7 +47,6 @@ class LocationService {
         desiredAccuracy: LocationAccuracy.best,
         timeLimit: const Duration(seconds: 10),
       );
-
     } catch (e) {
       _setDefaultPosition();
       _error = 'Impossible de déterminer la position';
@@ -82,11 +81,12 @@ class LocationService {
     if (!hasValidPosition) return null;
 
     return Geolocator.distanceBetween(
-      _userPosition!.latitude,
-      _userPosition!.longitude,
-      latitude,
-      longitude,
-    ) / 1000;
+          _userPosition!.latitude,
+          _userPosition!.longitude,
+          latitude,
+          longitude,
+        ) /
+        1000;
   }
 
   bool isUsingDefaultLocation() {

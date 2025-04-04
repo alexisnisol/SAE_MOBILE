@@ -53,33 +53,35 @@ void main() {
     RestaurantDetailPage.CURRENT_USER_ID = "1";
 
     when(mockDatabase.getRestaurantById(restaurant.id_restaurant)).thenAnswer(
-          (invocation) async => restaurant,
+      (invocation) async => restaurant,
     );
 
     when(mockDatabase.imageLink(restaurant.name)).thenAnswer(
-          (invocation) async => "https://example.com/image.jpg",
+      (invocation) async => "https://example.com/image.jpg",
     );
 
     when(mockDatabase.isConnected()).thenReturn(true);
 
-    when(mockDatabase.isRestaurantFavorited(RestaurantDetailPage.CURRENT_USER_ID!, restaurant.id_restaurant))
+    when(mockDatabase.isRestaurantFavorited(
+            RestaurantDetailPage.CURRENT_USER_ID!, restaurant.id_restaurant))
         .thenAnswer((_) async => false);
 
     when(mockDatabase.getTypeCuisineRestaurant(restaurant.id_restaurant))
         .thenAnswer((_) async => []);
 
-    when(mockDatabase.estCuisineLike(RestaurantDetailPage.CURRENT_USER_ID!, restaurant.id_restaurant))
+    when(mockDatabase.estCuisineLike(
+            RestaurantDetailPage.CURRENT_USER_ID!, restaurant.id_restaurant))
         .thenAnswer((_) async => false);
 
     when(mockDatabase.getReviewsRestau(restaurant.id_restaurant))
         .thenAnswer((_) async => []);
 
-    when(mockDatabase.getRestaurantFavoris(RestaurantDetailPage.CURRENT_USER_ID!))
+    when(mockDatabase
+            .getRestaurantFavoris(RestaurantDetailPage.CURRENT_USER_ID!))
         .thenAnswer((_) async => []);
   });
 
   Future<void> _buildWidget(WidgetTester tester) async {
-
     await tester.pumpWidget(
       MaterialApp(
         home: RestaurantDetailPage(restaurantId: restaurant.id_restaurant),
@@ -95,12 +97,14 @@ void main() {
     expect(find.text(restaurant.name), findsWidgets);
   });
 
-  testWidgets("Affichage de l'image du restaurant", (WidgetTester tester) async {
+  testWidgets("Affichage de l'image du restaurant",
+      (WidgetTester tester) async {
     await _buildWidget(tester);
     expect(find.byType(Image), findsOneWidget);
   });
 
-  testWidgets("Affichage des horaires d'ouverture", (WidgetTester tester) async {
+  testWidgets("Affichage des horaires d'ouverture",
+      (WidgetTester tester) async {
     await _buildWidget(tester);
     expect(find.text(restaurant.opening_hours), findsOneWidget);
   });
@@ -110,5 +114,3 @@ void main() {
     expect(find.text("Fast Food"), findsNothing);
   });
 }
-
-

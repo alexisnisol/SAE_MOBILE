@@ -17,44 +17,45 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/profil'),
-          ),
-          title: const Text('Gérer les préférences'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/profil'),
+        ),
+        title: const Text('Gérer les préférences'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FormBuilder(
           key: _formKey,
-            child:
-              SettingsList(
-              sections: [
-                SettingsSection(
-                  title: const Text('Theme'),
-                  tiles: [
-                    SettingsTile.switchTile(
-                      initialValue: context.watch<SettingsViewModel>().isDark,
-                      onToggle: (bool value) {
-                        context.read<SettingsViewModel>().isDark = value;
-                      },
-                      title: const Text('Mode sombre'),
-                      leading: const Icon(Icons.invert_colors),)
-                  ]),
-                SettingsSection(
-                  title: const Text('Confidentialité'),
-                  tiles: [
-                    SettingsTile.switchTile(
-                      initialValue: context.watch<SettingsViewModel>().isGeolocationDisabled,
-                      onToggle: (bool value) {
-                        context.read<SettingsViewModel>().isGeolocationDisabled = value;
-                      },
-                      title: const Text('Désactiver la géolocalisation'),
-                      leading: const Icon(Icons.location_on),
-                    ),
-                  ],
-                ),
-              ],
+          child: SettingsList(
+            sections: [
+              SettingsSection(title: const Text('Theme'), tiles: [
+                SettingsTile.switchTile(
+                  initialValue: context.watch<SettingsViewModel>().isDark,
+                  onToggle: (bool value) {
+                    context.read<SettingsViewModel>().isDark = value;
+                  },
+                  title: const Text('Mode sombre'),
+                  leading: const Icon(Icons.invert_colors),
+                )
+              ]),
+              SettingsSection(
+                title: const Text('Confidentialité'),
+                tiles: [
+                  SettingsTile.switchTile(
+                    initialValue: context
+                        .watch<SettingsViewModel>()
+                        .isGeolocationDisabled,
+                    onToggle: (bool value) {
+                      context.read<SettingsViewModel>().isGeolocationDisabled =
+                          value;
+                    },
+                    title: const Text('Désactiver la géolocalisation'),
+                    leading: const Icon(Icons.location_on),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

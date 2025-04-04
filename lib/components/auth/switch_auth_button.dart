@@ -9,15 +9,18 @@ class AuthButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        onPressed: () {
-      context.go(isRegister ? '/login' : '/register');
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.white,
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: const Color(0xff587c60))),
-    ),
-    child: Text(isRegister ? "Se Connecter" : "S'Inscrire", style: TextStyle(fontSize: 16, color: const Color(0xff587c60))),
+      onPressed: () {
+        context.go(isRegister ? '/login' : '/register');
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: const Color(0xff587c60))),
+      ),
+      child: Text(isRegister ? "Se Connecter" : "S'Inscrire",
+          style: TextStyle(fontSize: 16, color: const Color(0xff587c60))),
     );
   }
 }
