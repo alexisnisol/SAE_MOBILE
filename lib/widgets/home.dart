@@ -46,7 +46,7 @@ class HomeScreen extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: selectedIndex == 0 ? Colors.green : Colors.black),
+            icon: Icon(Icons.home, color: selectedIndex == 0 ? Colors.green : Colors.black), //color
             label: 'Accueil',
           ),
           BottomNavigationBarItem(
