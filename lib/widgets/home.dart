@@ -20,6 +20,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = _getIndexFromRoute(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -37,12 +38,33 @@ class HomeScreen extends StatelessWidget {
             case 4: context.go('/profil'); break;
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Favoris'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Carte'),
-          BottomNavigationBarItem(icon: Icon(Icons.rate_review), label: 'Avis'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+        selectedItemColor: Colors.green, // Couleur verte pour l'élément sélectionné
+        unselectedItemColor: Colors.black, // Couleur noire pour les éléments non sélectionnés
+        selectedLabelStyle: TextStyle(color: Colors.green), // Texte vert pour l'élément sélectionné
+        unselectedLabelStyle: TextStyle(color: Colors.black), // Texte noir pour les autres
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: selectedIndex == 0 ? Colors.green : Colors.black),
+            label: 'Accueil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star, color: selectedIndex == 1 ? Colors.green : Colors.black),
+            label: 'Favoris',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map, color: selectedIndex == 2 ? Colors.green : Colors.black),
+            label: 'Carte',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.rate_review, color: selectedIndex == 3 ? Colors.green : Colors.black),
+            label: 'Avis',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: selectedIndex == 4 ? Colors.green : Colors.black),
+            label: 'Profil',
+          ),
         ],
       ),
     );
