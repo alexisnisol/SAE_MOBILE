@@ -23,7 +23,6 @@ class SupabaseDatabase implements IDatabase {
         );
         _isInitialized = true;
       } catch (e) {
-        print(e);
         _isInitialized = false;
       }
     }
@@ -45,11 +44,11 @@ class SupabaseDatabase implements IDatabase {
     if (!_isInitialized) await initialize();
 
     try {
-      final List<dynamic> response =
-          await _supabase.from('RESTAURANT').select();
-      return response
-          .map((data) => Restaurant.fromMap(data as Map<String, dynamic>))
-          .toList();
+      final List<dynamic> response = await _supabase.from('RESTAURANT')
+          .select();
+      return response.map((data) =>
+          Restaurant.fromMap(data as Map<String, dynamic>)
+      ).toList();
     } catch (e) {
       print('Erreur de récupération des restaurants depuis Supabase : $e');
       return [];
@@ -58,8 +57,8 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<List<Review>> getReviews(String id) async {
-    final List<dynamic> response =
-        await _supabase.from('AVIS').select().eq('id_utilisateur', id);
+    final List<dynamic> response = await _supabase.from('AVIS').select().eq(
+        'id_utilisateur', id);
     List<Review> reviews = response.map((data) {
       return Review.fromJson(data as Map<String, dynamic>);
     }).toList();
@@ -69,8 +68,8 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<List<Review>> getReviewsRestau(int restauId) async {
-    final List<dynamic> response =
-        await _supabase.from('AVIS').select().eq('id_restaurant', restauId);
+    final List<dynamic> response = await _supabase.from('AVIS').select().eq(
+        'id_restaurant', restauId);
     List<Review> reviews = response.map((data) {
       return Review.fromJson(data as Map<String, dynamic>);
     }).toList();
@@ -111,8 +110,8 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<Restaurant> getRestaurantById(int id) async {
-    final response =
-        await _supabase.from('RESTAURANT').select().eq('id_restaurant', id);
+    final response = await _supabase.from('RESTAURANT').select().eq(
+        'id_restaurant', id);
     return Restaurant.fromMap(response[0] as Map<String, dynamic>);
   }
 
@@ -133,21 +132,17 @@ class SupabaseDatabase implements IDatabase {
     }
 
     // Transformation des données pour extraire id et cuisine
-    return response
-        .map<Map<String, dynamic>>((row) => {
-              "id": row["id_cuisine"],
-              "cuisine": row["TYPE_CUISINE"]["cuisine"]
-            })
-        .toList();
+    return response.map<Map<String, dynamic>>((row) =>
+    {
+      "id": row["id_cuisine"],
+      "cuisine": row["TYPE_CUISINE"]["cuisine"]
+    }).toList();
   }
 
   @override
   Future<bool> estCuisineLike(String userId, int cuisineId) async {
-    final response = await _supabase
-        .from("CUISINE_AIME")
-        .select()
-        .eq("id_utilisateur", userId)
-        .eq("id_cuisine", cuisineId);
+    final response = await _supabase.from("CUISINE_AIME").select().eq(
+        "id_utilisateur", userId).eq("id_cuisine", cuisineId);
 
     if (response.isEmpty) {
       return false;
@@ -157,16 +152,13 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<void> dislikeCuisine(String userId, int cuisineId) async {
-    await _supabase
-        .from("CUISINE_AIME")
-        .delete()
+    await _supabase.from("CUISINE_AIME").delete()
         .eq("id_utilisateur", userId)
         .eq("id_cuisine", cuisineId);
   }
 
   @override
   Future<void> likeCuisine(String userId, int cuisineId) async {
-    print("Début de likeCuisine");
     try {
       final response = await _supabase
           .from("CUISINE_AIME")
@@ -174,9 +166,7 @@ class SupabaseDatabase implements IDatabase {
 
       // !!! Attention laisser : print("Error: ${response.error}");
       // !!! Sinon insertion non fonctionnel
-      print("Error: ${response.error}");
     } catch (e) {
-      print("Erreur lors de l'insertion: $e");
       throw e;
     }
   }
@@ -195,28 +185,35 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<void> deleteRestaurantFavoris(String userId, int restauId) {
-    return _supabase
-        .from('RESTAURANT_AIME')
-        .delete()
-        .eq('id_utilisateur', userId)
-        .eq('id_restaurant', restauId);
+    return _supabase.from('RESTAURANT_AIME').delete().eq(
+        'id_utilisateur', userId).eq('id_restaurant', restauId);
   }
 
   @override
   Future<void> addRestaurantFavoris(String userId, int restauId) {
-    print("Ajout du restaurant $restauId aux favoris de l'utilisateur $userId");
-    return _supabase
-        .from('RESTAURANT_AIME')
-        .insert({'id_utilisateur': userId, 'id_restaurant': restauId});
+    return _supabase.from('RESTAURANT_AIME').insert(
+        {'id_utilisateur': userId, 'id_restaurant': restauId});
   }
 
   @override
   Future<bool> isRestaurantFavorited(String userId, int restaurantId) async {
-    final response = await _supabase
-        .from('RESTAURANT_AIME')
-        .select()
-        .eq('id_utilisateur', userId)
-        .eq('id_restaurant', restaurantId);
+    final response = await _supabase.from('RESTAURANT_AIME').select().eq(
+        'id_utilisateur', userId).eq('id_restaurant', restaurantId);
     return response.isNotEmpty;
+  }
+
+  @override
+  Future<void> addReviewWithImage(String userId, int restaurantId, String avis, int etoiles, DateTime date, String? imageUrl) async {
+    int idAvis = await idMaxAvis();
+    idAvis++;
+    await _supabase.from("AVIS").insert({
+      "id_avis": idAvis,
+      "id_utilisateur": userId,
+      "id_restaurant": restaurantId,
+      "etoile": etoiles,
+      "avis": avis,
+      "date_avis": date.toIso8601String(),
+      "image_url": imageUrl
+    });
   }
 }

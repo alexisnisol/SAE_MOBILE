@@ -27,7 +27,7 @@ import 'package:sae_mobile/models/review.dart';
 
 class _FakeRestaurant_0 extends _i1.SmartFake implements _i2.Restaurant {
   _FakeRestaurant_0(Object parent, Invocation parentInvocation)
-      : super(parent, parentInvocation);
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [IDatabase].
@@ -39,89 +39,102 @@ class MockIDatabase extends _i1.Mock implements _i3.IDatabase {
   }
 
   @override
-  _i4.Future<void> initialize() => (super.noSuchMethod(
-        Invocation.method(#initialize, []),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+  _i4.Future<void> initialize() =>
+      (super.noSuchMethod(
+            Invocation.method(#initialize, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
-  _i4.Future<List<_i2.Restaurant>> getRestaurants() => (super.noSuchMethod(
-        Invocation.method(#getRestaurants, []),
-        returnValue: _i4.Future<List<_i2.Restaurant>>.value(
-          <_i2.Restaurant>[],
-        ),
-      ) as _i4.Future<List<_i2.Restaurant>>);
+  _i4.Future<List<_i2.Restaurant>> getRestaurants() =>
+      (super.noSuchMethod(
+            Invocation.method(#getRestaurants, []),
+            returnValue: _i4.Future<List<_i2.Restaurant>>.value(
+              <_i2.Restaurant>[],
+            ),
+          )
+          as _i4.Future<List<_i2.Restaurant>>);
 
   @override
-  _i4.Future<List<_i5.Review>> getReviews(String? id) => (super.noSuchMethod(
-        Invocation.method(#getReviews, [id]),
-        returnValue: _i4.Future<List<_i5.Review>>.value(<_i5.Review>[]),
-      ) as _i4.Future<List<_i5.Review>>);
+
+  _i4.Future<List<_i5.Review>> getReviews(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#getReviews, [id]),
+            returnValue: _i4.Future<List<_i5.Review>>.value(<_i5.Review>[]),
+          )
+          as _i4.Future<List<_i5.Review>>);
 
   @override
-  _i4.Future<void> deleteReview(int? id) => (super.noSuchMethod(
-        Invocation.method(#deleteReview, [id]),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+  _i4.Future<void> deleteReview(int? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteReview, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
-  _i4.Future<_i2.Restaurant> getRestaurantById(int? id) => (super.noSuchMethod(
-        Invocation.method(#getRestaurantById, [id]),
-        returnValue: _i4.Future<_i2.Restaurant>.value(
-          _FakeRestaurant_0(
-            this,
+  _i4.Future<_i2.Restaurant> getRestaurantById(int? id) =>
+      (super.noSuchMethod(
             Invocation.method(#getRestaurantById, [id]),
-          ),
-        ),
-      ) as _i4.Future<_i2.Restaurant>);
+            returnValue: _i4.Future<_i2.Restaurant>.value(
+              _FakeRestaurant_0(
+                this,
+                Invocation.method(#getRestaurantById, [id]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Restaurant>);
 
   @override
-  bool isConnected() => (super.noSuchMethod(
-        Invocation.method(#isConnected, []),
-        returnValue: false,
-      ) as bool);
+  bool isConnected() =>
+      (super.noSuchMethod(
+            Invocation.method(#isConnected, []),
+            returnValue: false,
+          )
+          as bool);
   @override
-  _i4.Future<String> imageLink(String? restaurantName) => (super.noSuchMethod(
+  _i4.Future<String> imageLink(String? restaurantName) =>
+      (super.noSuchMethod(
         Invocation.method(#imageLink, [restaurantName]),
-        returnValue:
-            _i4.Future<String>.value('https://example.com/default.png'),
+        returnValue: _i4.Future<String>.value('https://example.com/default.png'),
       ) as _i4.Future<String>);
 
   @override
-  _i4.Future<bool> isRestaurantFavorited(String userId, int restauId) =>
-      (super.noSuchMethod(
-        Invocation.method(#isRestaurantFavorited, [userId, restauId]),
-        returnValue: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+  _i4.Future<bool> isRestaurantFavorited(String userId, int restauId) => (
+  super.noSuchMethod(
+    Invocation.method(#isRestaurantFavorited, [userId, restauId]),
+    returnValue: _i4.Future<bool>.value(false),
+  ) as _i4.Future<bool>);
 
   @override
-  _i4.Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(
-          int restauId) =>
-      (super.noSuchMethod(
+  _i4.Future<List<Map<String, dynamic>>> getTypeCuisineRestaurant(int restauId) => (
+      super.noSuchMethod(
         Invocation.method(#getTypeCuisineRestaurant, [restauId]),
         returnValue: _i4.Future<List<Map<String, dynamic>>>.value([]),
       ) as _i4.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i4.Future<bool> estCuisineLike(String userId, int restauId) =>
-      (super.noSuchMethod(
+  _i4.Future<bool> estCuisineLike(String userId, int restauId) => (
+      super.noSuchMethod(
         Invocation.method(#estCuisineLike, [userId, restauId]),
         returnValue: _i4.Future<bool>.value(false),
       ) as _i4.Future<bool>);
 
   @override
-  _i4.Future<List<Review>> getReviewsRestau(int restauId) =>
-      (super.noSuchMethod(
+  _i4.Future<List<Review>> getReviewsRestau(int restauId) => (
+      super.noSuchMethod(
         Invocation.method(#getReviewsRestau, [restauId]),
         returnValue: _i4.Future<List<Review>>.value([]),
       ) as _i4.Future<List<Review>>);
 
   @override
-  _i4.Future<List<int>> getRestaurantFavoris(String userId) =>
-      (super.noSuchMethod(
+  _i4.Future<List<int>> getRestaurantFavoris(String userId) => (
+      super.noSuchMethod(
         Invocation.method(#getRestaurantFavoris, [userId]),
         returnValue: _i4.Future<List<int>>.value([]),
       ) as _i4.Future<List<int>>);
 }
+

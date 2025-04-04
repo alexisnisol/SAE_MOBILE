@@ -21,9 +21,7 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
     futureGroupedFavoris = _loadGroupedFavoris();
   }
 
-  /// Cette fonction récupère la liste des favoris (les id des restaurants) pour l'utilisateur 1,
-  /// puis pour chaque id, elle récupère les détails du restaurant et son type de cuisine.
-  /// Les restaurants sont ensuite regroupés par type de cuisine.
+
   Future<Map<String, List<Restaurant>>> _loadGroupedFavoris() async {
     List<int> favoriteIds = await DatabaseHelper.getRestaurantFavoris(
         AuthHelper.getCurrentUser().id);
@@ -63,9 +61,9 @@ class _GroupedFavorisPageState extends State<GroupedFavorisPage> {
       appBar: AppBar(
         title: const Text(
           'Favoris',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor:  const Color(0xff587C60),
         centerTitle: true,
       ),
       body: FutureBuilder<Map<String, List<Restaurant>>>(
