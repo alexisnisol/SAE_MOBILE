@@ -57,7 +57,7 @@ class MockIDatabase extends _i1.Mock implements _i3.IDatabase {
           as _i4.Future<List<_i2.Restaurant>>);
 
   @override
-  _i4.Future<List<_i5.Review>> getReviews(int? id) =>
+  _i4.Future<List<_i5.Review>> getReviews(String id) =>
       (super.noSuchMethod(
             Invocation.method(#getReviews, [id]),
             returnValue: _i4.Future<List<_i5.Review>>.value(<_i5.Review>[]),

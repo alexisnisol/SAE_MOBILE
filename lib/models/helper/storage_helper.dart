@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../database/database_helper.dart';
+import 'dart:typed_data';
+
 
 class StorageHelper {
 
@@ -34,13 +36,19 @@ class StorageHelper {
     }
   }
 
+
   static Future<String> uploadBinary(String bucketName, String fileName, List<int> bytes, {FileOptions? fileOptions}) async {
     try {
-      return await _storage.from(bucketName).uploadBinary(fileName, bytes, fileOptions: fileOptions);
+      // Convertir List<int> en Uint8List
+      Uint8List uint8List = Uint8List.fromList(bytes);
+
+      // Appel à la méthode de Supabase pour l'upload
+      return await _storage.from(bucketName).uploadBinary(fileName, uint8List, fileOptions: fileOptions);
     } catch (e) {
       throw Exception('Failed to upload binary: $e');
     }
   }
+
 
   static Future<String> getPublicUrl(String bucketName, String? fileName) async {
     try {
