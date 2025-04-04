@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sae_mobile/models/review.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../components/Restaurant/RestaurantMap.dart';
 import '../models/database/database_helper.dart';
 import '../models/helper/auth_helper.dart';
+import '../models/location_service.dart';
 import '../models/restaurant.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
@@ -19,8 +20,9 @@ class RestaurantDetailPage extends StatefulWidget {
 }
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
-  Map<int, bool> likedCuisines = {};
+  final LocationService _locationService = LocationService();
   final TextEditingController _avisController = TextEditingController();
+  Map<int, bool> likedCuisines = {};
   int _selectedRating = 3;
   bool _isFavorited = false;
 
@@ -28,30 +30,25 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   void initState() {
     super.initState();
     _checkIfFavorited();
+    _locationService.getUserLocation(false);
   }
 
-  // Vérifie si le restaurant est déjà favorisé pour l'utilisateur courant.
   Future<void> _checkIfFavorited() async {
     if (RestaurantDetailPage.CURRENT_USER_ID != null) {
       bool favorited = await DatabaseHelper.isRestaurantFavorited(
           RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId);
-      setState(() {
-        _isFavorited = favorited;
-      });
+      setState(() => _isFavorited = favorited);
     }
   }
 
-  // Bascule l'état du favori et met à jour la base de données.
   Future<void> _toggleFavorite() async {
     if (RestaurantDetailPage.CURRENT_USER_ID == null) return;
 
-    if (_isFavorited) {
-      await DatabaseHelper.deleteRestaurantFavoris(
-          RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId);
-    } else {
-      await DatabaseHelper.addRestaurantFavoris(
-          RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId);
-    }
+    _isFavorited
+        ? await DatabaseHelper.deleteRestaurantFavoris(
+        RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId)
+        : await DatabaseHelper.addRestaurantFavoris(
+        RestaurantDetailPage.CURRENT_USER_ID!, widget.restaurantId);
     _checkIfFavorited();
   }
 
@@ -76,10 +73,8 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                context.go('/carte');
-              },
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go('/carte'),
             ),
             title: Text(restaurant.name),
             actions: [
@@ -94,374 +89,9 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
           ),
           body: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image du restaurant
-                FutureBuilder<String>(
-                  future: DatabaseHelper.imageLink(restaurant.name),
-                  builder: (context, snapshot) {
-                    final imageUrl =
-                        snapshot.data ?? DatabaseHelper.DEFAULT_IMAGE;
-                    return Container(
-                      width: double.infinity,
-                      height: 200,
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: double.infinity,
-                          height: 200,
-                          color: Colors.grey.shade300,
-                          child: Icon(Icons.restaurant,
-                              size: 50, color: Colors.grey.shade700),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                // Informations du restaurant
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        restaurant.name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 40),
-                      ),
-                      _buildInfoWithData(
-                        label: "Lieu : ",
-                        value:
-                        "${restaurant.region ?? ''}, ${restaurant.departement ?? ''}, ${restaurant.commune ?? ''}",
-                      ),
-                      if (restaurant.brand != null &&
-                          restaurant.brand!.isNotEmpty)
-                        _buildInfoWithData(
-                            label: "Marque : ", value: restaurant.brand!),
-                      if (restaurant.opening_hours != null &&
-                          restaurant.opening_hours!.isNotEmpty)
-                        _buildInfoWithData(
-                            label: "Horaires : ",
-                            value: restaurant.opening_hours!),
-                      if (restaurant.phone != null &&
-                          restaurant.phone!.isNotEmpty)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text("Tel : ",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("📞 ${restaurant.phone!}"),
-                            IconButton(
-                              icon: Icon(Icons.call, size: 18),
-                              onPressed: () async {
-                                final Uri launchUri = Uri(
-                                  scheme: 'tel',
-                                  path: restaurant.phone,
-                                );
-                                if (await canLaunchUrl(launchUri)) {
-                                  await launchUrl(launchUri);
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      FutureBuilder<List<Map<String, dynamic>>>(
-                        future: DatabaseHelper.getTypeCuisineRestaurant(
-                            widget.restaurantId),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text("Chargement des types de cuisine...");
-                          }
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return SizedBox.shrink();
-                          }
-                          final cuisines = snapshot.data!;
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text("Type de cuisine : ",
-                                  style:
-                                  TextStyle(fontWeight: FontWeight.bold)),
-                              Expanded(
-                                child: Wrap(
-                                  spacing: 8,
-                                  children: cuisines.map((cuisine) {
-                                    if (RestaurantDetailPage.CURRENT_USER_ID !=
-                                        null) {
-                                      return FutureBuilder<bool>(
-                                        future: DatabaseHelper.estCuisineLike(
-                                            RestaurantDetailPage.CURRENT_USER_ID!,
-                                            cuisine["id"]),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return SizedBox(
-                                                width: 24, height: 24);
-                                          }
-                                          bool isLiked = snapshot.data ?? false;
-                                          return Chip(
-                                            label: GestureDetector(
-                                              onTap: () async {
-                                                bool newLikeStatus = !isLiked;
-                                                 DatabaseHelper.toggleCuisineLike(
-                                                    RestaurantDetailPage
-                                                        .CURRENT_USER_ID!,
-                                                    cuisine["id"],
-                                                    newLikeStatus);
-                                                setState(() {
-                                                  likedCuisines[cuisine["id"]] =
-                                                      newLikeStatus;
-                                                });
-                                              },
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Icon(
-                                                    isLiked
-                                                        ? Icons.favorite
-                                                        : Icons.favorite_border,
-                                                    size: 16,
-                                                    color: Colors.red,
-                                                  ),
-                                                  SizedBox(width: 4),
-                                                  Text(cuisine["cuisine"]),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    } else {
-                                      return Chip(
-                                        label: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.restaurant,
-                                                size: 16, color: Colors.grey),
-                                            SizedBox(width: 4),
-                                            Text(cuisine["cuisine"]),
-                                          ],
-                                        ),
-                                      );
-                                    }
-                                  }).toList(),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      if (restaurant.wheelchair == true ||
-                          restaurant.vegetarian == true ||
-                          restaurant.vegan == true ||
-                          restaurant.delivery == true ||
-                          restaurant.takeaway == true ||
-                          restaurant.internet_access == true ||
-                          restaurant.drive_through == true)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildServicesList(restaurant),
-                          ],
-                        ),
-                      SizedBox(height: 8),
-                      if (restaurant.website != null &&
-                          restaurant.website!.isNotEmpty)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Site web : ",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Expanded(
-                              child: InkWell(
-                                child: Text(
-                                  restaurant.website!,
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      decoration: TextDecoration.underline),
-                                ),
-                                onTap: () async {
-                                  final Uri url = Uri.parse(restaurant.website!);
-                                  if (await canLaunchUrl(url)) {
-                                    await launchUrl(url,
-                                        mode: LaunchMode.externalApplication);
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      SizedBox(height: 16),
-                      Divider(),
-                      if (RestaurantDetailPage.CURRENT_USER_ID != null) ...[
-                        SizedBox(height: 16),
-                        Text('Laisser un avis :',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Note : ",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Row(
-                              children: List.generate(
-                                5,
-                                    (index) => IconButton(
-                                  icon: Icon(
-                                    index < _selectedRating
-                                        ? Icons.star
-                                        : Icons.star_border,
-                                    color: Colors.amber,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _selectedRating = index + 1;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        TextField(
-                          controller: _avisController,
-                          maxLines: 3,
-                          decoration: InputDecoration(
-                            hintText: "Votre avis...",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end, // Aligner à droite
-                          children: [
-                            ElevatedButton(
-                              onPressed: _submitReview,
-                              child: Text("Envoyer l'avis"),
-                            ),
-                          ],
-                        ),
-                      ] else
-                        Center(
-                          child: Text(
-                            "Veuillez vous connecter pour laisser un avis...",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                      Text('Les avis :',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8),
-                      FutureBuilder<List<Review>>(
-                        future: DatabaseHelper.getReviewsRestau(widget.restaurantId),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text("Chargement des avis...");
-                          }
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.green.shade50,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                  "${restaurant.name} n'a pas d'avis pour le moment."),
-                            );
-                          }
-                          final lesAvis = snapshot.data!;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: lesAvis.map((avis) {
-                              return Container(
-                                width: double.infinity,
-                                margin: EdgeInsets.symmetric(vertical: 4),
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.shade50,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 1,
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "Utilisateur ${avis.userId}",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Spacer(),
-                                        Row(
-                                          children: List.generate(
-                                            5,
-                                                (index) => Icon(
-                                              index < avis.etoiles
-                                                  ? Icons.star
-                                                  : Icons.star_border,
-                                              color: Colors.amber,
-                                              size: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      "${avis.date.day}/${avis.date.month}/${avis.date.year}",
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(avis.avis),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      Divider(),
-                      Text('Localisation :',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.map,
-                                  size: 50, color: Colors.grey.shade600),
-                              SizedBox(height: 8),
-                              Text('Carte - Intégrer Google Maps ici'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildRestaurantImage(restaurant),
+                _buildRestaurantInfo(restaurant),
               ],
             ),
           ),
@@ -470,70 +100,281 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     );
   }
 
-  Widget _buildInfoWithData({required String label, required String value}) {
-    if (value.trim().isEmpty) return SizedBox();
+  Widget _buildRestaurantImage(Restaurant restaurant) {
+    return FutureBuilder<String>(
+      future: DatabaseHelper.imageLink(restaurant.name),
+      builder: (context, snapshot) {
+        final imageUrl = snapshot.data ?? DatabaseHelper.DEFAULT_IMAGE;
+        return AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: Colors.grey[200],
+              child: const Icon(Icons.restaurant, size: 50),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRestaurantInfo(Restaurant restaurant) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value)),
+          Text(
+            restaurant.name,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 30,
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildLocationInfo(restaurant),
+          const SizedBox(height: 20),
+          _buildContactInfo(restaurant),
+          const SizedBox(height: 20),
+          _buildMapSection(restaurant),
+          const SizedBox(height: 20),
+          _buildServicesSection(restaurant),
+          const SizedBox(height: 20),
+          _buildReviewsSection(restaurant),
         ],
       ),
     );
   }
 
-  Widget _buildServicesList(Restaurant restaurant) {
-    List<String> services = [];
-    if (restaurant.wheelchair == true) services.add("Accès fauteuil roulant");
-    if (restaurant.vegetarian == true) services.add("Options végétariennes");
-    if (restaurant.vegan == true) services.add("Options véganes");
-    if (restaurant.delivery == true) services.add("Livraison");
-    if (restaurant.takeaway == true) services.add("À emporter");
-    if (restaurant.internet_access == true) services.add("Wi-Fi");
-    if (restaurant.drive_through == true) services.add("Drive-through");
-    if (services.isEmpty) return const SizedBox();
+  Widget _buildLocationInfo(Restaurant restaurant) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Services : ", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text(
+          'Localisation',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 8),
+        Text(
+          '${restaurant.commune}, ${restaurant.departement}, ${restaurant.region}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        if (restaurant.opening_hours?.isNotEmpty ?? false)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              'Horaires : ${restaurant.opening_hours}',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+      ],
+    );
+  }
 
-        // Utilisation d'un slider horizontal
-        SizedBox(
-          height: 40, // Hauteur adaptée pour les Chips
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal, // Slider horizontal
-            itemCount: services.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Chip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.check, color: Colors.green, size: 16),
-                      SizedBox(width: 4),
-                      Text(services[index]),
-                    ],
-                  ),
-                ),
-              );
-            },
+  Widget _buildContactInfo(Restaurant restaurant) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Contact',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        if (restaurant.phone?.isNotEmpty ?? false)
+          ListTile(
+            leading: const Icon(Icons.phone),
+            title: Text(restaurant.phone!),
+            onTap: () => launchUrl(Uri.parse('tel:${restaurant.phone}')),
+          ),
+        if (restaurant.website?.isNotEmpty ?? false)
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: Text(restaurant.website!),
+            onTap: () => launchUrl(Uri.parse(restaurant.website!)),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildMapSection(Restaurant restaurant) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Sur la carte',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        RestaurantMap(
+          restaurant: restaurant,
+          locationService: _locationService,
+          height: 250,
+        ),
+        if (_locationService.hasValidPosition)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              'À ${_locationService.calculateDistanceTo(restaurant.latitude, restaurant.longitude)?.toStringAsFixed(1)} km',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildServicesSection(Restaurant restaurant) {
+    final services = [
+      if (restaurant.wheelchair) 'Accès PMR',
+      if (restaurant.vegetarian) 'Végétarien',
+      if (restaurant.vegan) 'Végan',
+      if (restaurant.delivery) 'Livraison',
+      if (restaurant.takeaway) 'À emporter',
+      if (restaurant.drive_through) 'Drive-through',
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Services',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: services
+              .map((service) => Chip(
+            label: Text(service),
+            avatar: const Icon(Icons.check_circle, size: 18),
+          ))
+              .toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReviewsSection(Restaurant restaurant) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Avis',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        if (RestaurantDetailPage.CURRENT_USER_ID != null)
+          _buildReviewInputSection(),
+        const SizedBox(height: 20),
+        FutureBuilder<List<Review>>(
+          future: DatabaseHelper.getReviewsRestau(widget.restaurantId),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return _buildReviewList(snapshot.data!);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReviewInputSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Laisser un avis',
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: List.generate(
+            5,
+                (index) => IconButton(
+              icon: Icon(
+                index < _selectedRating ? Icons.star : Icons.star_border,
+                color: Colors.amber,
+                size: 30,
+              ),
+              onPressed: () => setState(() => _selectedRating = index + 1),
+            ),
+          ),
+        ),
+        TextField(
+          controller: _avisController,
+          maxLines: 3,
+          decoration: InputDecoration(
+            hintText: 'Écrivez votre avis...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.centerRight,
+          child: ElevatedButton(
+            onPressed: _submitReview,
+            child: const Text('Publier'),
           ),
         ),
       ],
     );
   }
 
+  Widget _buildReviewList(List<Review> reviews) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: reviews.length,
+      separatorBuilder: (_, __) => const Divider(height: 30),
+      itemBuilder: (context, index) {
+        final review = reviews[index];
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            'Utilisateur ${review.userId}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 5),
+              Text(review.avis),
+              const SizedBox(height: 5),
+              Text(
+                '${review.date.day}/${review.date.month}/${review.date.year}',
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              5,
+                  (i) => Icon(
+                i < review.etoiles ? Icons.star : Icons.star_border,
+                color: Colors.amber,
+                size: 20,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _submitReview() async {
     if (_avisController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Veuillez écrire un avis avant d'envoyer.")),
+        const SnackBar(content: Text('Veuillez écrire un avis')),
       );
       return;
     }
+
     await DatabaseHelper.addReview(
       RestaurantDetailPage.CURRENT_USER_ID!,
       widget.restaurantId,
@@ -541,12 +382,14 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
       _selectedRating,
       DateTime.now(),
     );
-    _avisController.clear();
+
     setState(() {
+      _avisController.clear();
       _selectedRating = 3;
     });
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Avis ajouté avec succès !")),
+      const SnackBar(content: Text('Avis publié avec succès !')),
     );
   }
 }
