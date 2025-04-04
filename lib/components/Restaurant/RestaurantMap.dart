@@ -49,19 +49,6 @@ class _RestaurantMapState extends State<RestaurantMap> {
   }
 
   void _initializeMap() {
-    debugPrint('Initializing map with restaurant at: '
-        '${widget.restaurant.latitude}, ${widget.restaurant.longitude}');
-
-    // Écoute les changements de zoom
-    _mapController.mapEventStream.listen((event) {
-      if (event is MapEventMove && event.zoom != _currentZoom) {
-        setState(() {
-          _currentZoom = event.zoom;
-          _updateMarkers();
-        });
-      }
-    });
-
     _updateMarkers();
     _updatePolylines();
     _adjustCameraPosition();
