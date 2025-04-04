@@ -22,7 +22,6 @@ class SupabaseDatabase implements IDatabase {
         );
         _isInitialized = true;
       } catch (e) {
-        print(e);
         _isInitialized = false;
       }
     }
@@ -159,7 +158,6 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<void> likeCuisine(String userId, int cuisineId) async {
-    print("Début de likeCuisine");
     try {
       final response = await _supabase
           .from("CUISINE_AIME")
@@ -167,9 +165,7 @@ class SupabaseDatabase implements IDatabase {
 
       // !!! Attention laisser : print("Error: ${response.error}");
       // !!! Sinon insertion non fonctionnel
-      print("Error: ${response.error}");
     } catch (e) {
-      print("Erreur lors de l'insertion: $e");
       throw e;
     }
   }
@@ -194,7 +190,6 @@ class SupabaseDatabase implements IDatabase {
 
   @override
   Future<void> addRestaurantFavoris(String userId, int restauId) {
-    print("Ajout du restaurant $restauId aux favoris de l'utilisateur $userId");
     return _supabase.from('RESTAURANT_AIME').insert(
         {'id_utilisateur': userId, 'id_restaurant': restauId});
   }

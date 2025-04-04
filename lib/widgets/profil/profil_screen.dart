@@ -15,7 +15,6 @@ class ProfilScreen extends StatelessWidget {
     }
     final user = AuthHelper.getCurrentUser();
 
-    print(user.userMetadata?['avatar_url']);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 4,

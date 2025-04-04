@@ -55,8 +55,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     try {
       await StorageHelper.createBucket(_bucketName);
     } catch (e) {
-      print("Bucket exists or error: $e");
-      print("Bucket exists or error: $e");
     }
   }
 
