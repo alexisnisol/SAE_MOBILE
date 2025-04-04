@@ -1,5 +1,4 @@
 import 'package:geolocator/geolocator.dart';
-import 'dart:io' show Platform;
 
 class LocationService {
   Position? _userPosition;
@@ -13,10 +12,16 @@ class LocationService {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> getUserLocation() async {
+  Future<void> getUserLocation(isGeolocationDisabled) async {
     try {
       _isLoading = true;
       _error = null;
+
+      if(isGeolocationDisabled) {
+        _setDefaultPosition();
+        _error = 'Service de localisation désactivé';
+        return;
+      }
 
       final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       LocationPermission permission = await Geolocator.checkPermission();

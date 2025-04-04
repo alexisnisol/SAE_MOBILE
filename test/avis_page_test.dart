@@ -78,7 +78,8 @@ void main() {
         .thenAnswer((_) async => 'https://example.com/default.png');
 
     // Utilisation de la liste copiée pour éviter des problèmes de référence
-    when(mockDatabase.getReviews('1'))
+
+    when(mockDatabase.getReviews("1"))
         .thenAnswer((_) async => List<Review>.from(fakeReviews));
 
     // Comportement personnalisé pour deleteReview
@@ -90,7 +91,8 @@ void main() {
       fakeReviews.removeWhere((review) => review.id == reviewId);
 
       // Mise à jour du mock pour retourner la liste modifiée
-      when(mockDatabase.getReviews('1'))
+
+      when(mockDatabase.getReviews("1"))
           .thenAnswer((_) async => List<Review>.from(fakeReviews));
     });
 

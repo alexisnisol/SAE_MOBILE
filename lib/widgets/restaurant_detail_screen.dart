@@ -268,6 +268,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                context.go('/carte');
+              },
+            ),
             title: Text(restaurant.name),
             actions: [
               IconButton(
@@ -554,6 +560,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                             ],
                           )
                               : const Text("Envoyer l'avis"),
+
                         ),
                       ] else
                         Center(
@@ -749,8 +756,8 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     if (restaurant.internet_access == true) services.add("Wi-Fi");
     if (restaurant.drive_through == true) services.add("Drive-through");
     if (services.isEmpty) return const SizedBox();
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text("Services : ", style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
@@ -769,6 +776,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               ),
             );
           }).toList(),
+
         ),
       ],
     );
