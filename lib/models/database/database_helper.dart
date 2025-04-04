@@ -132,4 +132,10 @@ class DatabaseHelper {
     await _database!.addReviewWithImage(userId, restaurantId, avis, etoiles, date, imageUrl);
   }
 
+  // Ajout de la méthode getUserLikedRestaurants
+  static Future<List<Restaurant>> getUserLikedRestaurants(String userId) async {
+    final restaurantIds = await _database!.getRestaurantFavoris(userId);
+    final restaurants = await Future.wait(restaurantIds.map((id) => _database!.getRestaurantById(id)));
+    return restaurants;
+  }
 }

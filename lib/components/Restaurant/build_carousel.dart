@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
- import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 import '../../models/database/database_helper.dart';
 import '../../models/restaurant.dart';
 import '../../models/location_service.dart';
@@ -7,9 +7,15 @@ import '../../models/viewmodels/settings_viewmodel.dart';
 import 'title_section.dart';
 import 'carousel_section.dart';
 
-
 class RestaurantCarousel extends StatefulWidget {
-  const RestaurantCarousel({super.key});
+  final String title;
+  final bool Function(Restaurant, LocationService)? filter;
+
+  const RestaurantCarousel({
+    super.key,
+    required this.title,
+    this.filter,
+  });
 
   @override
   State<RestaurantCarousel> createState() => _RestaurantCarouselState();
@@ -29,6 +35,7 @@ class _RestaurantCarouselState extends State<RestaurantCarousel> {
   @override
   Widget build(BuildContext context) {
     _locationFuture = _locationService.getUserLocation(context.watch<SettingsViewModel>().isGeolocationDisabled);
+
     return FutureBuilder(
       future: Future.wait([_restaurantsFuture, _locationFuture]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
@@ -38,14 +45,21 @@ class _RestaurantCarouselState extends State<RestaurantCarousel> {
           return Center(child: Text('Erreur: ${snapshot.error}'));
         }
 
-        final restaurants = snapshot.data![0] as List<Restaurant>;
+        List<Restaurant> restaurants = snapshot.data![0] as List<Restaurant>;
+
+        // Appliquer le filtre si présent
+        if (widget.filter != null) {
+          restaurants = restaurants.where((r) => widget.filter!(r, _locationService)).toList();
+        }
+
         if (restaurants.isEmpty) {
-          return const Center(child: Text('Aucun restaurant disponible'));
+          return const SizedBox(); // Ne rien afficher si aucun résultat
         }
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TitleSection(),
+            TitleSection(title: widget.title),
             if (_locationService.isLoading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -61,7 +75,7 @@ class _RestaurantCarouselState extends State<RestaurantCarousel> {
               ),
             CarouselSection(
               restaurants: restaurants,
-              locationService: _locationService, // Passez le service complet
+              locationService: _locationService,
             ),
           ],
         );
