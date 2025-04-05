@@ -73,7 +73,7 @@ class _RestaurantCarouselState extends State<RestaurantCarousel> {
                 autoPlay: false,
                 enlargeCenterPage: true,
                 viewportFraction: 0.8,
-                aspectRatio: 1.5,
+                aspectRatio: 1.35,
                 enableInfiniteScroll: true,
                 scrollPhysics: const BouncingScrollPhysics(),
               ),

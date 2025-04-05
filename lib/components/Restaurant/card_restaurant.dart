@@ -40,7 +40,7 @@ class RestaurantCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
                   child: SizedBox(
-                    height: 150,
+                    height: 135,
                     width: double.infinity,
                     child: imageSnapshot.connectionState == ConnectionState.waiting
                         ? const Center(child: CircularProgressIndicator())
