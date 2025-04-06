@@ -1,16 +1,73 @@
-# sae_mobile
+# Taste&Tell Mobile
 
-A new Flutter project.
+**Lien Vidéo de Démo :**  
+https://www.youtube.com/watch?v=Z4LPG_LXuFg
 
-## Getting Started
+**Lien Rapports : https://docs.google.com/document/d/1LlJHA5Rr3e6NAnFW7XPgh3ZU9Enoi-H_PihJTuG7sFk/edit?usp=sharing**
 
-This project is a starting point for a Flutter application.
+## Description
 
-A few resources to get you started if this is your first Flutter project:
+Taste&Tell Mobile est une application mobile (développée avec Flutter) qui permet aux utilisateurs de rechercher des restaurants, de donner leur avis et de gérer leurs préférences culinaires. L’application intègre un système d’authentification sécurisé, la gestion des avis et la personnalisation de l’expérience utilisateur pour une utilisation intuitive sur smartphone et tablette.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Fonctionnalités
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Recherche :**  
+  🔍 Trouvez rapidement un restaurant par nom, localisation ou type de cuisine.
+
+- **Inscription & Connexion :**  
+  🔑 Création et authentification des utilisateurs avec gestion sécurisée des sessions.
+
+- **Consultation des Restaurants :**  
+  🏪 Visualisez les informations détaillées d’un restaurant (nom, type de cuisine, adresse, etc.).
+
+- **Avis et Critiques :**  
+  ⭐ Laissez et consultez des avis et des notes sur les établissements.
+
+- **Gestion de ses Avis :**  
+  ✍️ Modifiez ou supprimez vos propres critiques.
+
+- **Profil Utilisateur :**  
+  🏠 Accédez et gérez vos informations personnelles dans un espace dédié.
+
+- **Adaptation aux Thèmes :**  
+  🎨 Mode sombre/clair pour une expérience visuelle adaptée à vos préférences.
+
+- **Préférences Culinaires :**  
+  🍽️ Enregistrez vos types de cuisine favoris pour des recommandations personnalisées.
+
+- **Liste de Restaurants Favoris :**  
+  ❤️ Ajoutez et gérez une liste de vos restaurants préférés.
+
+- **Carte Interactive :**  
+  🗺️ Visualisez la localisation des restaurants sur une carte intégrée.
+
+- **Modification du Profil :**  
+  ✏️ Mettez à jour vos informations personnelles (nom, email, mot de passe, etc.).
+
+## Structure du Projet
+
+La structure du projet est organisée comme suit :
+
+#### **lib/**
+- #### **components/**
+  - #### **auth/**
+  - #### **form/**
+  - #### **Restaurant/**
+  - #### **router/**
+- #### **models/**
+  - #### **database/**
+  - #### **helper/**
+  - #### **viewmodels/**
+- #### **repository/**
+- #### **widgets/**
+  - #### **auth/**
+  - #### **profil/**
+
+Auteurs
+Alexis NISOL
+
+Niksan NAGARAJAH
+
+Alexy WICIAK
+
+Mouâd ZOUADI
